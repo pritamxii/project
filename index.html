@@ -3,28 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Calculator - Created by Pritam</title>
+    <title>Love Calculator Pro - Pritam Mistry</title>
     
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
 
         body {
             background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow-x: hidden; padding: 20px 0;
         }
 
         @keyframes gradientBG {
@@ -34,371 +26,220 @@
         }
 
         #capture-node {
-            background-color: white;
-            width: 95%;
-            max-width: 420px;
-            padding: 40px 25px;
-            text-align: center;
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 95%; max-width: 420px;
+            padding: 30px 20px; text-align: center; border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            position: relative; z-index: 10;
         }
 
         .logo-text {
-            font-family: 'Brush Script MT', cursive;
-            font-size: 4.5rem;
+            font-family: 'Brush Script MT', cursive; font-size: 4rem;
             background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
-            line-height: 1.2;
-        }
-
-        #loader {
-            display: none;
-            margin: 20px auto;
-        }
-        .heart-loader {
-            font-size: 50px;
-            animation: heartbeat 1s infinite;
-        }
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
-        }
-
-        .funky-msg {
-            font-size: 16px;
-            line-height: 1.5;
-            padding: 15px;
-            background: #fff5f6;
-            border-radius: 20px;
-            border: 2px dashed #ff9a9e;
-            margin-top: 15px;
-            color: #333;
         }
 
         input {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #f0f0f0;
-            border-radius: 15px;
-            background-color: #f9f9f9;
-            outline: none;
-            font-size: 16px;
-            margin-bottom: 15px;
-            transition: 0.3s;
+            width: 100%; padding: 15px; border: none;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 15px; margin-bottom: 12px; outline: none; 
+            font-size: 16px; color: #fff; font-weight: 500;
         }
-        input:focus { border-color: #dc2743; }
+        input::placeholder { color: rgba(255,255,255,0.8); }
 
-        .btn-calculate, .btn-download {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 18px;
-            transition: transform 0.2s;
-        }
-        .btn-calculate:active { transform: scale(0.95); }
-
-        .percentage-text {
-            font-size: 65px;
-            font-weight: 900;
-            color: #ed4956;
-            margin: 5px 0;
-            text-shadow: 2px 2px 10px rgba(237, 73, 86, 0.2);
+        .btn-main {
+            width: 100%; padding: 16px; 
+            background: linear-gradient(45deg, #dc2743, #bc1888);
+            color: white; border: none; border-radius: 15px; font-weight: bold;
+            cursor: pointer; font-size: 17px; margin-bottom: 10px;
         }
 
-        #names-display {
-            font-size: 20px;
-            color: #2c3e50;
-            font-weight: 800;
-            margin-bottom: 10px;
+        .percentage-text { font-size: 70px; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(0,0,0,0.2); }
+
+        #advice-box {
+            margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.2);
+            border-radius: 15px; font-size: 14px; color: #fff; display: none;
         }
 
-        #music-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #eee;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            z-index: 10;
+        .share-container { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
+        .share-btn { padding: 12px; border-radius: 12px; border: none; color: white; font-size: 14px; cursor: pointer; font-weight: bold; flex: 1; }
+        .wa { background: #25D366; } .ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+
+        .heart-particle {
+            position: fixed; bottom: -10%; font-size: 25px;
+            user-select: none; pointer-events: none; z-index: 1;
+            animation: floatUp 4s linear forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-120vh); opacity: 0; }
         }
 
-        footer { 
-            margin-top: 25px; 
-            font-size: 12px; 
-            color: #bbb; 
-            letter-spacing: 1px; 
-            font-weight: 600;
-            text-transform: uppercase;
+        .contact-us {
+            margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);
         }
+        .contact-us p { font-size: 14px; color: #fff; margin-bottom: 10px; font-weight: bold; }
+        .social-links a {
+            display: inline-block; margin: 0 10px; color: #fff; text-decoration: none; font-size: 13px;
+            background: rgba(0,0,0,0.2); padding: 5px 12px; border-radius: 20px;
+        }
+
+        footer { margin-top: 15px; font-size: 11px; color: rgba(255,255,255,0.7); }
     </style>
 </head>
 <body>
 
-    <audio id="loveSong" loop>
-        <source src="Real_love.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="loveSong" loop><source src="Real_love.mp3" type="audio/mpeg"></audio>
 
     <div id="capture-node">
-        <button id="music-toggle" onclick="toggleMusic()">🔇</button>
+        <div class="logo-text">Love Calc</div>
+        <p style="color:#fff; font-size:12px; margin-bottom: 20px; opacity: 0.8;">Created by Pritam Mistry</p>
         
-        <div class="calc-header">
-            <div class="logo-text">Love Calc</div>
-            <p style="color:#666; font-size:14px; margin-bottom:25px; font-weight: 600;">"Not Exact, but Exactly"</p>
-        </div>
-
         <div id="input-area">
             <input type="text" id="name1" placeholder="আপনার নাম..." autocomplete="off">
             <input type="text" id="name2" placeholder="পার্টনারের নাম..." autocomplete="off">
-            <button class="btn-calculate" onclick="startAnalysis()">Calculate ❤️</button>
+            <button class="btn-main" onclick="startAnalysis()">Calculate ❤️</button>
         </div>
 
-        <div id="loader">
-            <div class="heart-loader">💖</div>
-            <p style="font-weight: bold; color: #dc2743;">গভীরভাবে বিশ্লেষণ করা হচ্ছে...</p>
+        <div id="loader" style="display:none;">
+            <div style="font-size:50px; animation: heartbeat 1s infinite;">💖</div>
+            <p style="color:white;">বিশ্লেষণ চলছে...</p>
         </div>
 
         <div id="result-box" style="display: none;">
-            <div id="names-display"></div>
+            <h3 id="names-display" style="color:#fff;"></h3>
             <div class="percentage-text" id="score-val">0%</div>
-            <div class="funky-msg" id="msg-container">
-                <b id="meme-label" style="display:block; color:#d63031; margin-bottom:8px; font-size: 18px;"></b>
+            
+            <div style="background: rgba(255,255,255,0.15); padding:15px; border-radius:20px; color:#fff;">
+                <b id="meme-label" style="display:block; font-size: 18px; margin-bottom: 5px;"></b>
                 <span id="final-msg"></span>
             </div>
-            
-            <div id="action-buttons" style="margin-top: 20px;">
-                <button class="btn-download" onclick="downloadCard()">Save Result 📸</button>
-                <p onclick="location.reload()" style="margin-top:20px; color:#0095f6; cursor:pointer; font-size:15px; font-weight:bold;">আবার চেষ্টা করুন 🔄</p>
+
+            <button class="btn-main" style="margin-top:15px; background:#23a6d5;" onclick="getAdvice()">Relationship Advice? 💡</button>
+            <div id="advice-box"></div>
+
+            <div class="share-container">
+                <button onclick="shareImageAndLink('WhatsApp')" class="share-btn wa">WhatsApp</button>
+                <button onclick="shareImageAndLink('Instagram')" class="share-btn ig">Instagram</button>
+            </div>
+
+            <button class="btn-main" style="margin-top:10px; background:rgba(0,0,0,0.4);" onclick="downloadCard()">Save to Gallery 📸</button>
+            <p onclick="location.reload()" style="cursor:pointer; font-size:14px; color:#fff; margin-top:10px; font-weight:bold;">আবার চেষ্টা করুন 🔄</p>
+        </div>
+
+        <div class="contact-us">
+            <p>Contact Us</p>
+            <div class="social-links">
+                <a href="https://www.facebook.com/share/1Du24h9PiY/" target="_blank">Facebook</a>
+                <a href="https://www.instagram.com/pritamxii?igsh=MW1ja2N4MXhxMTdiYg==" target="_blank">Instagram</a>
             </div>
         </div>
 
-        <footer>Created by Pritam</footer>
+        <footer>© 2026 PRITAM MISTRY</footer>
     </div>
 
     <script>
         const audio = document.getElementById('loveSong');
-        let musicPlaying = false;
+        let currentScore = 0; let p1="", p2="";
 
-        function toggleMusic() {
-            if (musicPlaying) {
-                audio.pause();
-                document.getElementById('music-toggle').innerText = "🔇";
-            } else {
-                audio.play().catch(e => {});
-                document.getElementById('music-toggle').innerText = "🔊";
+        function createFloatingHearts() {
+            for(let i=0; i<20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-particle';
+                    heart.innerHTML = '❤️';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 4000);
+                }, i * 200);
             }
-            musicPlaying = !musicPlaying;
         }
 
         function startAnalysis() {
-            const n1 = document.getElementById('name1').value.trim();
-            const n2 = document.getElementById('name2').value.trim();
-            
-            if (!n1 || !n2) { 
-                alert("দয়া করে দুটি নামই লিখুন! 😂"); 
-                return; 
-            }
-
-            if (!musicPlaying) toggleMusic();
-
+            p1 = document.getElementById('name1').value.trim();
+            p2 = document.getElementById('name2').value.trim();
+            if (!p1 || !p2) { alert("নাম লিখুন!"); return; }
+            audio.play().catch(e=>{});
             document.getElementById('input-area').style.display = 'none';
             document.getElementById('loader').style.display = 'block';
-
             setTimeout(() => {
                 document.getElementById('loader').style.display = 'none';
-                showResult(n1, n2);
+                document.getElementById('result-box').style.display = 'block';
+                showResult(p1, p2);
             }, 2000);
         }
 
         function showResult(n1, n2) {
-            const resultBox = document.getElementById('result-box');
-            resultBox.style.display = 'block';
-            
-            document.getElementById('names-display').innerText = n1 + " 💖 " + n2;
-
-            // Logic for calculation
+            document.getElementById('names-display').innerText = n1 + " + " + n2;
             let score = ((n1.length + n2.length) * 7 + (n1.charCodeAt(0) || 0)) % 101;
-            
-            // Easter egg for certain names (optional)
-            if ((n1+n2).toLowerCase().includes("ahana")) score = 100;
-
-            let current = 0;
-            const timer = setInterval(() => {
-                if (current >= score) {
-                    clearInterval(timer);
-                    finalizeUI(score);
+            if(score < 30) score += 40;
+            currentScore = score;
+            let cur = 0;
+            const t = setInterval(() => {
+                if (cur >= score) {
+                    clearInterval(t); finalizeResult(score); createFloatingHearts();
                 } else {
-                    current++;
-                    document.getElementById('score-val').innerText = current + "%";
+                    cur++; document.getElementById('score-val').innerText = cur + "%";
                 }
-            }, 20);
+            }, 25);
         }
 
-        function finalizeUI(val) {
+        function finalizeResult(s) {
             const label = document.getElementById('meme-label');
-            const msgEl = document.getElementById('final-msg');
-            
-            const memeDatabase = {
-                range90: [
-                    {l: "Rab Ne Bana Di Jodi 🤵👰", m: "তোরা তো পুরো পারফেক্ট! বিয়েতে বিরিয়ানির লেগ পিসটা আমার জন্য বুক করে রাখ।"},
-                    {l: "Soulmates Found! ✨", m: "তোদের ভালোবাসা দেখে মনে হচ্ছে মজনুও হিংসে করবে!"},
-                    {l: "Power Couple ⚡", m: "তোদের কেমিস্ট্রি তো পর্যায় সারণীর সব এলিমেন্টকেও হার মানাবে।"},
-                    {l: "Legendary Love ❤️", m: "তোমাদের মিল দেখে মনে হচ্ছে তোমরা গত সাত জন্ম ধরে একসাথে আছো।"},
-                    {l: "Kazi Office Ready? 📝", m: "আর দেরি করিস না, জাস্ট শুভ কাজটা সেরে ফেল!"},
-                    {l: "Ideal Couple 🏆", m: "তোদের জোড়া একদম স্বর্গ থেকে তৈরি হয়ে এসেছে।"},
-                    {l: "No Words! 😍", m: "এত মিল? আমি তো বিশ্বাসই করতে পারছি না। জাস্ট অসাম!"},
-                    {l: "Sweetest Love 🍬", m: "তোমাদের ভালোবাসা রসগোল্লার থেকেও বেশি মিষ্টি।"},
-                    {l: "Pure Magic 🪄", m: "তোমাদের বন্ধন জাদুর মতো, এটাকে সবসময় আগলে রেখো।"},
-                    {l: "Endless Romance 🌹", m: "তোমাদের গল্পের শেষ নেই, এটা চলতেই থাকুক হাজার বছর।"}
-                ],
-                range80: [
-                    {l: "Super Hit Jodi! 🎬", m: "তোদের জুটি একদম ব্লকবাস্টার সিনেমার মতো হিট!"},
-                    {l: "So Much Love! 💖", m: "তোদের কেমিস্ট্রি দেখে আইনিস্টাইনও অবাক হয়ে যেত।"},
-                    {l: "Chemistry King 🧪", m: "একদম দারুণ মিল! জাস্ট একে অপরের ওপর ভরসা রাখিস।"},
-                    {l: "Dream Team 🌈", m: "তোমাদের ভালোবাসা অনেক মানুষের জন্য ইন্সপিরেশন হতে পারে।"},
-                    {l: "Aww So Cute! 🥰", m: "তোমাদের ছবি দেখলে তো ফোনের স্ক্রিনেও পিঁপড়ে ধরবে!"},
-                    {l: "True Bonding 🤝", m: "তোমাদের মধ্যে বোঝাপড়াটা দেখার মতো।"},
-                    {l: "Heart To Heart ❤️", m: "তোমাদের হৃদস্পন্দন যেন একই ছন্দে চলে।"},
-                    {l: "Lovely Vibes ✨", m: "তোমাদের চারপাশটা সবসময় পজিটিভ ভাইব দিয়ে ঘেরা থাকে।"},
-                    {l: "Solid Support 💪", m: "একজন অন্যজনের শক্তির উৎস, এটা বজায় রেখো।"},
-                    {l: "Sparkling Eyes 👀", m: "তোমাদের চোখের দিকে তাকালেই ভালোবাসা বোঝা যায়।"}
-                ],
-                range70: [
-                    {l: "Jalwa Hai Hamara! ✨", m: "বেশ ভালো! তবে মাঝেমধ্যে একটু ফুচকা পার্টি দিতে ভুলো না।"},
-                    {l: "Sweet Hearts 🍭", m: "সম্পর্কটা বেশ মিষ্টি, তবে মাঝেমধ্যে ইগোটা দূরে রেখো।"},
-                    {l: "Almost Perfect 🎯", m: "আরেকটু যত্ন নিলেই তোমরা ১০০/১০০ হয়ে যাবে।"},
-                    {l: "Good Going! 🚀", m: "তোমাদের ট্রেন একদম সঠিক লাইনেই যাচ্ছে।"},
-                    {l: "Nice Connection 📞", m: "সিগন্যাল বেশ স্ট্রং, তবে রিচার্জ করতে ভুলো না!"},
-                    {l: "Happy Vibes 😊", m: "তোমাদের দেখে মনটা ভালো হয়ে যায়।"},
-                    {l: "Love In The Air ☁️", m: "আশেপাশে সব জায়গায় শুধু ভালোবাসার গন্ধ!"},
-                    {l: "Cute Fights 🥊", m: "একটু একটু ঝগড়া আর অনেক অনেক ভালোবাসা।"},
-                    {l: "Trust Is High 🛡️", m: "তোমাদের বিশ্বাসই তোমাদের সম্পর্কের মূল চাবিকাঠি।"},
-                    {l: "Beautiful Pair 🖼️", m: "ফ্রেম করে রাখার মতো চমৎকার একটি জুটি।"}
-                ],
-                range60: [
-                    {l: "Adjustment Is Key 🔑", m: "ভালোবাসা আছে, তবে মাঝেমধ্যে একটু স্যাক্রিফাইস করতে হবে।"},
-                    {l: "Safe Zone ✅", m: "তোমাদের সম্পর্কটা স্থিতিশীল, এভাবেই এগিয়ে যাও।"},
-                    {l: "Keep Trying 🛠️", m: "আরেকটু সময় দাও একে অপরকে, আরও ভালো হবে।"},
-                    {l: "Good Friends? 👫", m: "ভালোবাসার আগে তোমরা ভালো বন্ধু, এটাই বড় কথা।"},
-                    {l: "Moderate Love ⚖️", m: "খুব বেশি মাখামাখি নেই, তবে টানটা কিন্তু ভেতর থেকে।"},
-                    {l: "Slow & Steady 🐢", m: "আস্তে আস্তে এগোও, সম্পর্কের ভিত শক্ত হবে।"},
-                    {l: "Better Together ➕", m: "একা থাকার চেয়ে তোমরা একসাথে থাকলেই বেশি মানায়।"},
-                    {l: "Warm Hearts 🔥", m: "তোমাদের মধ্যে একটা উষ্ণতা আছে যা সবসময় থাকে।"},
-                    {l: "Simple & Sweet 🍯", m: "খুব বেশি নাটক নেই, একদম সহজ সরল ভালোবাসা।"},
-                    {l: "Steady Pace 🏃", m: "তোমাদের জার্নিটা লম্বা হোক এটাই কামনা করি।"}
-                ],
-                range50: [
-                    {l: "Gajab Bejjati Hai! 🤣", m: "স্কোর তো একদম বর্ডার লাইনে! ব্রেক-আপ ঠেকাতে আজই গিফট দে।"},
-                    {l: "Fifty-Fifty 🌓", m: "অর্ধেক ভালোবাসা আর অর্ধেক সন্দেহ? একটু সামলে ভাই!"},
-                    {l: "Neutral Gear ⚙️", m: "সম্পর্কটা না এগোচ্ছে না পেছাচ্ছে! একটা ধাক্কা দরকার।"},
-                    {l: "Confusion Hi Confusion 🤔", m: "তোরা ঠিক কী চাস নিজেরাই জানিস না বোধহয়!"},
-                    {l: "Need More Date ☕", m: "বেশি করে ডেটে যা, নইলে কিন্তু অন্য কেউ সুযোগ নেবে।"},
-                    {l: "Middle Path 🛣️", m: "একদম মাঝামাঝি অবস্থা! হয় এপার নয় ওপার হতে হবে।"},
-                    {l: "Work In Progress 🏗️", m: "সম্পর্কটা এখনো আন্ডার কনস্ট্রাকশন মোডে আছে।"},
-                    {l: "Average Jodi 😐", m: "খুব একটা খারাপ না, আবার খুব একটা ভালোও না।"},
-                    {l: "Keep Talking 🗣️", m: "কথোপকথন বাড়িয়ে দাও, ভুল বোঝাবুঝি কমবে।"},
-                    {l: "Try Harder 💪", m: "আরেকটু এফোর্ট দিলে রেজাল্ট আরও ভালো আসতে পারতো।"}
-                ],
-                range40: [
-                    {l: "Warning Alert ⚠️", m: "ভাই, তুই কি নিশ্চিত সে তোকেই ভালোবাসে? একটু চেক করিস!"},
-                    {l: "Thoda Sambhal Ke 🚶‍♂️", m: "পিচ্ছিল রাস্তা! যেকোনো সময় হোঁচট খেতে পারো।"},
-                    {l: "Distance Increasing 📏", m: "তোমাদের মধ্যে দূরত্ব বাড়ছে, একটু কাছে আসার চেষ্টা করো।"},
-                    {l: "Cold Vibes ❄️", m: "ভালোবাসার উত্তাপটা কেন জানি কমে গেছে!"},
-                    {l: "Only Messaging? 📱", m: "শুধু মেসেজ করলে হবে না, সামনাসামনি দেখাও করতে হবে।"},
-                    {l: "Low Battery 🔋", m: "তোমাদের সম্পর্কের চার্জ প্রায় শেষের পথে!"},
-                    {l: "Change Style ✨", m: "পুরনো ঝগড়া বাদ দাও, নতুন করে শুরু করো।"},
-                    {l: "Missing Spark ✨", m: "ভেতরের সেই স্পার্কটা যেন কোথায় হারিয়ে গেছে।"},
-                    {l: "Hard Luck 🍀", m: "ভাগ্য খুব একটা সহায় নেই তোমাদের ওপর।"},
-                    {l: "Take A Break ⏸️", m: "মাঝেমধ্যে একটু বিরতি নেওয়াটাও জরুরি।"}
-                ],
-                range30: [
-                    {l: "Beta Tumse Na Ho Payega! 💀", m: "ভাই তুই বরং সিঙ্গেল থাকাই প্র্যাকটিস কর! তোর কপালে দুঃখ আছে।"},
-                    {l: "Moye Moye 🎵", m: "তোর কপালটাই খারাপ ভাই, পরের জন্মে চেষ্টা করিস!"},
-                    {l: "Friendzone Alert 🛑", m: "তুই তো অলরেডি ফ্রেন্ডজোনড হওয়ার পথে!"},
-                    {l: "No Chemistry 🧪", m: "তোদের তো পিরিয়ডিক টেবিলে কোনো জায়গাই নেই।"},
-                    {l: "Sad Life 😔", m: "ভালোবাসার চেয়ে বিরহে থাকাই তোদের বেশি মানাবে।"},
-                    {l: "One Sided? ☝️", m: "একতরফা ভালোবাসা না তো? একটু ভালো করে খোঁজ নে।"},
-                    {l: "Exit Gate 🚪", m: "বেরোনোর দরজাটা খুব কাছেই, ভেবে দেখ একবার।"},
-                    {l: "Empty Heart 💔", m: "হৃদয়টা খালি পড়ে আছে, সেখানে ভালোবাসার দেখা নেই।"},
-                    {l: "Big Mistake ❌", m: "সম্পর্কটা শুরু করাই হয়তো একটা ভুল ছিল।"},
-                    {l: "Better Luck Next Time 🎲", m: "এবার হলো না, পরের বার কোনো ভালো অপশন খুঁজিস।"}
-                ],
-                range20: [
-                    {l: "Risky Business 🧨", m: "তোর গার্লফ্রেন্ড তোর মেসেজ সিন করে রিপ্লাই দেয় তো?"},
-                    {l: "Red Flag Alert 🚩", m: "বন্ধু, তোর সামনে বিপদ! এখনই পালানোর রাস্তা খোঁজ।"},
-                    {l: "Broken Dreams 🏚️", m: "স্বপ্নগুলো সব ভেঙে চুরমার হয়ে যাওয়ার আগেই পালা!"},
-                    {l: "No Hope 🚫", m: "আশা করে লাভ নেই, কপালে বিয়ের ফুল ফোটেনি।"},
-                    {l: "Serious Issue 🚑", m: "তোর সম্পর্কের অবস্থা আইসিইউ তে!"},
-                    {l: "Wrong Number 📞", m: "তুই ভুল জায়গায় কল করেছিস ভাই, এটা তোর জন্য না।"},
-                    {l: "Total Waste 🗑️", m: "সময় আর আবেগ দুটোই নষ্ট হচ্ছে তোর।"},
-                    {l: "Zero Logic 🧠", m: "তোদের একসাথে থাকার কোনো যুক্তিই খুঁজে পাচ্ছি না।"},
-                    {l: "Run Bro Run! 🏃‍♂️", m: "পিছনে না তাকিয়ে দৌড়ে পালিয়ে যা!"},
-                    {l: "Silent Treatment 🙊", m: "তোমাদের মধ্যে কথা হওয়ার চেয়ে চুপ থাকাটাই বেশি মঙ্গল।"}
-                ],
-                range0: [
-                    {l: "Aila, Jadu! 👽", m: "তোদের তো মুখ দেখাদেখি বন্ধ হওয়ার কথা! ক্যালকুলেটর হ্যাং হয়ে গেছে।"},
-                    {l: "Error 404: Not Found 🚫", m: "ভালোবাসা তো দূরের কথা, তোমাদের মধ্যে তো ঝগড়াও ঠিকমতো হয় না!"},
-                    {l: "Beyond Science 🧪", m: "তোদের সম্পর্কটা বিজ্ঞানের সব সূত্রের বাইরে!"},
-                    {l: "Impossible Task 🏔️", m: "হিমালয় চড়া সহজ, কিন্তু তোদের একসাথে থাকা অসম্ভব।"},
-                    {l: "Ghosted 👻", m: "তুই কি ভূতের সাথে প্রেম করছিস নাকি? কোনো রেসপন্স নেই যে!"},
-                    {l: "Better Be Single 🕺", m: "সিঙ্গেল থাকার মজাই আলাদা ভাই, তুই সেটাই এনজয় কর।"},
-                    {l: "Joke Of The Year 😂", m: "তোদের ভালোবাসাটা এই বছরের সেরা কৌতুক হতে পারে।"},
-                    {l: "Game Over 🎮", m: "খেলা শেষ! বাড়ি ফিরে গিয়ে পড়াশোনায় মন দে।"},
-                    {l: "Disaster! 🌪️", m: "তোরা দুজন একসাথে থাকা মানে একটা প্রাকৃতিক বিপর্যয়!"},
-                    {l: "Wake Up! ⏰", m: "ভাই ঘুম থেকে ওঠ, তুই স্বপ্ন দেখছিস!"}
-                ]
-            };
+            const msg = document.getElementById('final-msg');
+            if(s >= 90) { label.innerText="Perfect Match! 🤵👰"; msg.innerText="তোরা একদম মেড ফর ইচ আদার!"; confetti(); }
+            else if(s >= 70) { label.innerText="Super Chemistry! ✨"; msg.innerText="সম্পর্কটা দারুণ ভাবে এগিয়ে নিয়ে চলো!"; }
+            else { label.innerText="Need Efforts! 💀"; msg.innerText="একটু বেশি সময় দাও একে অপরকে।"; }
+        }
 
-            let list;
-            if (val >= 90) { list = memeDatabase.range90; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); }
-            else if (val >= 80) list = memeDatabase.range80;
-            else if (val >= 70) list = memeDatabase.range70;
-            else if (val >= 60) list = memeDatabase.range60;
-            else if (val >= 50) list = memeDatabase.range50;
-            else if (val >= 40) list = memeDatabase.range40;
-            else if (val >= 30) list = memeDatabase.range30;
-            else if (val >= 20) list = memeDatabase.range20;
-            else list = memeDatabase.range0;
+        function getAdvice() {
+            const advices = ["আজই ফুচকা খাওয়াও!", "বেশি সন্দেহ কোরো না!", "সারপ্রাইজ গিফট দাও!", "একসাথে মুভি দেখো!", "মাঝেমধ্যে সরি বলো!"];
+            const box = document.getElementById('advice-box');
+            box.style.display = 'block';
+            box.innerText = "💡 Advice: " + advices[Math.floor(Math.random() * advices.length)];
+        }
 
-            // Random selection from the list
-            const result = list[Math.floor(Math.random() * list.length)];
+        // --- ইমেজ এবং লিঙ্ক শেয়ারিং ম্যাজিক ---
+        async function shareImageAndLink(platform) {
+            const node = document.getElementById('capture-node');
             
-            label.innerText = result.l;
-            msgEl.innerText = result.m;
+            // বাটন সাময়িকভাবে লুকানো
+            const elements = document.querySelectorAll('.btn-main, .share-container, .contact-us, footer');
+            elements.forEach(el => el.style.visibility = 'hidden');
+
+            const canvas = await html2canvas(node, { scale: 2, backgroundColor: null });
+            const dataUrl = canvas.toDataURL("image/png");
+            const blob = await (await fetch(dataUrl)).blob();
+            const file = new File([blob], 'LoveResult.png', { type: 'image/png' });
+
+            elements.forEach(el => el.style.visibility = 'visible');
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Love Calculator Result',
+                        text: `আমার আর ${p2}-এর ভালোবাসার স্কোর ${currentScore}%! ❤️ চেক করো তোমারটা এই লিঙ্কে: ${window.location.href}`,
+                    });
+                } catch (err) {
+                    alert(`${platform}-এ শেয়ার করতে হলে আগে ইমেজটি সেভ করে নিন।`);
+                }
+            } else {
+                alert("আপনার ব্রাউজার সরাসরি শেয়ার সাপোর্ট করছে না। রেজাল্টটি সেভ করে শেয়ার করুন।");
+            }
         }
 
         function downloadCard() {
             const node = document.getElementById('capture-node');
-            const actionBtns = document.getElementById('action-buttons');
-            const musicBtn = document.getElementById('music-toggle');
-            
-            actionBtns.style.display = 'none';
-            musicBtn.style.display = 'none';
-
-            html2canvas(node, {
-                scale: 3, 
-                backgroundColor: "#ffffff",
-                borderRadius: 30
-            }).then(canvas => {
+            html2canvas(node, { scale: 3 }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'Love_Result_Pritam.png';
-                link.href = canvas.toDataURL("image/png");
+                link.download = `Love_Result_Pritam.png`;
+                link.href = canvas.toDataURL();
                 link.click();
-
-                actionBtns.style.display = 'block';
-                musicBtn.style.display = 'block';
             });
         }
     </script>
