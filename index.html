@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Engine Ultra - Pritam Mistry</title>
+    <title>Love Calc Ultra Soft - Pritam Mistry</title>
     
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -11,85 +11,92 @@
     
     <style>
         :root {
-            --neon: #ff2d55;
-            --glass: rgba(255, 255, 255, 0.1);
-            --border: rgba(255, 255, 255, 0.2);
+            --neon: #ff4d6d;
+            --glass: rgba(255, 255, 255, 0.2);
+            --border: rgba(255, 255, 255, 0.4);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
         body {
-            background: radial-gradient(circle at center, #0f0c29, #302b63, #24243e);
-            min-height: 100vh; display: flex; justify-content: center; align-items: center;
-            overflow-x: hidden; padding: 20px 0; color: white;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden; padding: 20px 0; color: #333;
         }
 
-        /* Glass Container */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         #capture-node {
             background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             width: 95%; max-width: 450px;
             padding: 40px 25px; border-radius: 40px;
-            text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             position: relative; z-index: 10;
         }
 
         .logo-text {
-            font-family: 'Brush Script MT', cursive; font-size: 4rem;
-            background: linear-gradient(45deg, #ff0055, #ffdd00);
+            font-family: 'Brush Script MT', cursive; font-size: 4.5rem;
+            background: linear-gradient(45deg, #ff4d6d, #ff8fa3);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 10px rgba(255,45,85,0.5));
+            margin-bottom: 5px;
         }
 
-        /* Photo Upload Styling */
+        /* Photo Display in Result */
         .photo-upload-container {
             display: flex; justify-content: space-around; margin: 25px 0;
         }
         .upload-box {
-            width: 100px; height: 100px; border: 2px dashed var(--border);
+            width: 100px; height: 100px; border: 2px dashed rgba(255,255,255,0.8);
             border-radius: 50%; overflow: hidden; position: relative;
-            background: rgba(255,255,255,0.05); cursor: pointer;
+            background: rgba(255,255,255,0.5); cursor: pointer;
         }
-        .upload-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .upload-box span { font-size: 10px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.6; }
+        .upload-box img { 
+            width: 100%; height: 100%; object-fit: cover; display: none; 
+            border-radius: 50%;
+        }
+        .upload-box span { font-size: 10px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.8; font-weight: bold; }
 
-        input {
+        input[type="text"] {
             width: 100%; padding: 15px; border: 1px solid var(--border);
-            background: rgba(255,255,255,0.05); border-radius: 15px;
-            margin-bottom: 15px; color: white; outline: none; transition: 0.3s;
+            background: rgba(255,255,255,0.5); border-radius: 15px;
+            margin-bottom: 15px; color: #333; outline: none;
         }
-        input:focus { border-color: var(--neon); background: rgba(255,255,255,0.1); }
 
         .btn-main {
             width: 100%; padding: 18px; border: none; border-radius: 20px;
-            background: linear-gradient(45deg, #ff2d55, #fb24a1);
+            background: linear-gradient(45deg, #ff4d6d, #ff8fa3);
             color: white; font-weight: bold; font-size: 16px; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(255,45,85,0.3); transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3);
         }
-        .btn-main:hover { transform: scale(1.02); filter: brightness(1.1); }
 
-        /* Love Meter */
         .meter-container {
             width: 150px; height: 75px; position: relative; margin: 20px auto;
             overflow: hidden; border-radius: 150px 150px 0 0;
-            background: rgba(255,255,255,0.1); border: 1px solid var(--border);
+            background: rgba(255,255,255,0.4); border: 1px solid var(--border);
         }
         #meter-fill {
             position: absolute; top: 100%; left: 50%; width: 100%; height: 100%;
-            background: linear-gradient(to top, #ff2d55, #ffdd00);
+            background: linear-gradient(to top, #ff4d6d, #ff8fa3);
             transform-origin: top center; transform: translateX(-50%) rotate(0deg);
-            transition: transform 2s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            transition: transform 2.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
         }
 
-        .percentage-text { font-size: 60px; font-weight: 800; margin: 10px 0; text-shadow: 0 0 15px var(--neon); }
+        .percentage-text { font-size: 65px; font-weight: 800; margin: 5px 0; color: #ff4d6d; }
 
-        /* Dynamic Proposal Box */
         #proposal-card {
-            display: none; background: rgba(0,0,0,0.3); border-radius: 20px;
-            padding: 20px; margin-top: 20px; border: 1px dashed #ffdd00;
-            font-style: italic; font-size: 14px; color: #ffdd00;
+            display: none; background: rgba(255, 255, 255, 0.4); border-radius: 20px;
+            padding: 20px; margin-top: 20px; border: 1px dashed #ff4d6d;
+            font-style: italic; font-size: 14px; color: #d63384; line-height: 1.5;
         }
 
         .floating-emoji {
@@ -103,15 +110,15 @@
 
         .share-container { display: flex; gap: 10px; margin-top: 20px; }
         .share-btn { flex: 1; padding: 12px; border-radius: 15px; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .wa { background: #25D366; } .ig { background: #f09433; }
+        .wa { background: #25D366; } .ig { background: #e1306c; }
 
         .contact-us { margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px; }
         .social-links a {
-            display: inline-block; margin: 0 10px; color: white; text-decoration: none;
-            font-size: 11px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px;
+            display: inline-block; margin: 0 10px; color: #333; text-decoration: none;
+            font-size: 11px; background: rgba(255,255,255,0.4); padding: 8px 15px; border-radius: 20px; font-weight: bold;
         }
 
-        footer { margin-top: 20px; font-size: 10px; opacity: 0.4; letter-spacing: 3px; }
+        footer { margin-top: 20px; font-size: 10px; opacity: 0.6; letter-spacing: 2px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -119,8 +126,8 @@
     <audio id="loveSong" loop><source src="Real_love.mp3" type="audio/mpeg"></audio>
 
     <div id="capture-node">
-        <div class="logo-text">Love Engine</div>
-        <p style="font-size: 10px; opacity: 0.6; margin-bottom: 20px;">PREMIUM EDITION | BY PRITAM MISTRY</p>
+        <div class="logo-text">Love Calc</div>
+        <p style="font-size: 10px; opacity: 0.7; margin-bottom: 20px; font-weight: bold;">SOFT EDITION | BY PRITAM MISTRY</p>
         
         <div id="input-area">
             <div class="photo-upload-container">
@@ -143,19 +150,21 @@
 
         <div id="loader" style="display:none;">
             <div style="font-size:60px; animation: heartbeat 1s infinite;">💖</div>
-            <p>Scanning Vibrations...</p>
+            <p style="font-weight: bold;">Scanning Vibrations...</p>
         </div>
 
         <div id="result-box" style="display: none;">
+            <div id="result-photos-placeholder"></div>
+
             <div class="meter-container">
                 <div id="meter-fill"></div>
             </div>
             <div class="percentage-text" id="score-val">0%</div>
-            <h3 id="names-display" style="margin-bottom: 15px; font-weight: 300;"></h3>
+            <h3 id="names-display" style="margin-bottom: 15px; font-weight: 600; color: #444;"></h3>
             
-            <div style="background: rgba(255,255,255,0.05); padding:20px; border-radius:25px; border: 1px solid var(--border);">
-                <b id="meme-label" style="display:block; color: #ffdd00; font-size: 18px; margin-bottom: 5px;"></b>
-                <span id="final-msg" style="font-size: 14px;"></span>
+            <div style="background: rgba(255,255,255,0.4); padding:20px; border-radius:25px; border: 1px solid var(--border);">
+                <b id="meme-label" style="display:block; color: #d63384; font-size: 18px; margin-bottom: 5px;"></b>
+                <span id="final-msg" style="font-size: 14px; font-weight: 500;"></span>
             </div>
 
             <div id="proposal-card"></div>
@@ -165,12 +174,12 @@
                 <button onclick="shareResult('IG')" class="share-btn ig">Instagram</button>
             </div>
 
-            <button class="btn-main" style="margin-top:15px; background: transparent; border: 1px solid white;" onclick="downloadCard()">Save To Gallery 📸</button>
-            <p onclick="location.reload()" style="cursor:pointer; font-size:14px; color:#0095f6; margin-top:20px; font-weight: bold;">Retry 🔄</p>
+            <button class="btn-main" style="margin-top:15px; background: transparent; border: 1px solid #ff4d6d; color: #ff4d6d;" onclick="downloadCard()">Save To Gallery 📸</button>
+            <p onclick="location.reload()" style="cursor:pointer; font-size:14px; color:#007bff; margin-top:20px; font-weight: bold;">Retry 🔄</p>
         </div>
 
         <div class="contact-us">
-            <p style="font-size: 12px; margin-bottom: 15px;">Created By Pritam</p>
+            <p style="font-size: 11px; margin-bottom: 12px; font-weight: bold; color: #555;">Created By Pritam</p>
             <div class="social-links">
                 <a href="https://www.facebook.com/share/1Du24h9PiY/" target="_blank">Facebook</a>
                 <a href="https://www.instagram.com/pritamxii?igsh=MW1ja2N4MXhxMTdiYg==" target="_blank">Instagram</a>
@@ -208,13 +217,17 @@
         function showResult() {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('result-box').style.display = 'block';
+            
+            // ইনপুট এরিয়া থেকে ফটো কন্টেইনারটিকে রেজাল্ট বক্সের নির্দিষ্ট জায়গায় নিয়ে আসা যাতে ডাউনলোডে ছবি থাকে
+            const photoContainer = document.querySelector('.photo-upload-container');
+            document.getElementById('result-photos-placeholder').appendChild(photoContainer);
+
             document.getElementById('names-display').innerText = n1 + " + " + n2;
 
             let score = ((n1.length + n2.length) * 7 + (n1.charCodeAt(0) || 0)) % 101;
             if(score < 30) score += 35;
             currentScore = score;
 
-            // Meter & Percentage Logic
             let cur = 0;
             const t = setInterval(() => {
                 if (cur >= score) {
@@ -226,7 +239,7 @@
                     document.getElementById('score-val').innerText = cur + "%";
                     document.getElementById('meter-fill').style.transform = `translateX(-50%) rotate(${cur * 1.8}deg)`;
                 }
-            }, 25);
+            }, 30);
         }
 
         function finalizeUI(s) {
@@ -235,17 +248,17 @@
             const proposal = document.getElementById('proposal-card');
             
             if(s >= 90) {
-                label.innerText="Perfect Connection! 💍";
-                msg.innerText="তোমরা একদম পারফেক্ট! বিয়েতে বিরিয়ানির লেগ পিসটা আমার জন্য বুক রাখিস।";
+                label.innerText="Perfect Match! 💍";
+                msg.innerText="তোমরা একদম পারফেক্ট! বিয়েতে বিরিয়ানির লেগ পিসটা আমার জন্য বুক রাখিস।";
                 proposal.style.display = 'block';
-                proposal.innerText = `"Dear ${n2}, since the engine says we are ${s}% compatible, I just want to say... You are the missing gear in my life! ❤️"`;
+                proposal.innerText = `"Dear ${n2}, since the score says we are ${s}% compatible, I just want to say... You are the missing part of my soul! ❤️"`;
                 confetti();
             } else if(s >= 70) {
-                label.innerText="Super Hot! 🔥";
-                msg.innerText="কেমিস্ট্রি হেব্বি জোস! জাস্ট ফাটিয়ে দে দোস্ত।";
+                label.innerText="Super Chemistry! ✨";
+                msg.innerText="তোদের জুটি একদম জমানো! জাস্ট এগিয়ে যাও দোস্ত।";
             } else {
-                label.innerText="Needs Refinement! 💀";
-                msg.innerText="তোর ইঞ্জিনে মনে হয় জং ধরেছে! আগে ফুচকা খাইয়ে ঠিক কর।";
+                label.innerText="Needs More Love! 💀";
+                msg.innerText="সম্পর্কটা আরও একটু মজবুত করো! ফুচকা আর চকোলেট কাজে দিতে পারে।";
             }
         }
 
@@ -264,12 +277,14 @@
         }
 
         async function shareResult() {
-            const text = `আমার আর ${n2}-এর ভালোবাসার স্কোর ${currentScore}%! ❤️`;
+            const node = document.getElementById('capture-node');
+            const text = `আমার আর ${n2}-এর ভালোবাসার স্কোর ${currentScore}%! ❤️ চেক করো তোমারটা এই লিঙ্কে: ${window.location.href}`;
+            
             if (navigator.share) {
-                const canvas = await html2canvas(document.getElementById('capture-node'), { scale: 2 });
+                const canvas = await html2canvas(node, { scale: 2, useCORS: true });
                 const blob = await (await fetch(canvas.toDataURL())).blob();
-                const file = new File([blob], 'LoveEngine.png', { type: 'image/png' });
-                navigator.share({ files: [file], title: 'Love Engine', text: text });
+                const file = new File([blob], 'LoveCalc.png', { type: 'image/png' });
+                navigator.share({ files: [file], title: 'Love Calc', text: text });
             } else {
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`);
             }
@@ -277,14 +292,21 @@
 
         function downloadCard() {
             const node = document.getElementById('capture-node');
-            const el = document.querySelectorAll('.share-container, .btn-main, p, .contact-us, footer');
-            el.forEach(b => b.style.display = 'none');
-            html2canvas(node, { scale: 3, backgroundColor: null }).then(canvas => {
+            // হাইড করার দরকার নেই যদি আমরা এলিমেন্টগুলোকে গুছিয়ে রাখি, তবে শেয়ার বাটনগুলো বাদ দিতে পারো
+            const btns = document.querySelectorAll('.share-container, .btn-main, p[onclick], .contact-us, footer');
+            btns.forEach(b => b.style.visibility = 'hidden');
+
+            html2canvas(node, { 
+                scale: 3, 
+                backgroundColor: null,
+                useCORS: true, // দিস ইজ ইম্পরট্যান্ট ফর ফটোস
+                allowTaint: true
+            }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Love_Engine_Result.png`;
-                link.href = canvas.toDataURL();
+                link.download = `Love_Calc_Result_Pritam.png`;
+                link.href = canvas.toDataURL("image/png");
                 link.click();
-                el.forEach(b => b.style.display = 'block');
+                btns.forEach(b => b.style.visibility = 'visible');
             });
         }
     </script>
