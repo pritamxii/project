@@ -1,138 +1,152 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Calculator Pro - Pritam Mistry</title>
+    <title>Love Calculator Ultra - Pritam Mistry</title>
     
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        :root {
+            --glass: rgba(255, 255, 255, 0.12);
+            --border: rgba(255, 255, 255, 0.25);
+            --neon: #ff2d55;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', sans-serif; }
 
         body {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: radial-gradient(circle at center, #1a1a2e, #000);
+            background-attachment: fixed;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; overflow-x: hidden; padding: 20px 0;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Animated Background Glow */
+        .bg-glow {
+            position: fixed; width: 350px; height: 350px;
+            background: var(--neon); filter: blur(130px);
+            border-radius: 50%; z-index: -1; animation: move 12s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-60%, -60%); }
+            to { transform: translate(60%, 60%); }
         }
 
         #capture-node {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            width: 95%; max-width: 420px;
-            padding: 30px 20px; text-align: center; border-radius: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            width: 92%; max-width: 400px;
+            padding: 45px 25px; text-align: center; border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
             position: relative; z-index: 10;
         }
 
         .logo-text {
-            font-family: 'Brush Script MT', cursive; font-size: 4rem;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            font-family: 'Brush Script MT', cursive; font-size: 4.8rem;
+            background: linear-gradient(to right, #ff0055, #ffdd00);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
+            margin-bottom: 5px; filter: drop-shadow(0 0 12px rgba(255,45,85,0.4));
         }
 
         input {
-            width: 100%; padding: 15px; border: none;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 15px; margin-bottom: 12px; outline: none; 
-            font-size: 16px; color: #fff; font-weight: 500;
+            width: 100%; padding: 18px; border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px; margin-bottom: 15px; outline: none; 
+            font-size: 16px; color: #fff; transition: 0.3s;
         }
-        input::placeholder { color: rgba(255,255,255,0.8); }
+        input:focus { border-color: #ff2d55; background: rgba(255, 255, 255, 0.15); }
+        input::placeholder { color: rgba(255,255,255,0.5); }
 
         .btn-main {
-            width: 100%; padding: 16px; 
-            background: linear-gradient(45deg, #dc2743, #bc1888);
-            color: white; border: none; border-radius: 15px; font-weight: bold;
-            cursor: pointer; font-size: 17px; margin-bottom: 10px;
+            width: 100%; padding: 18px; 
+            background: linear-gradient(45deg, #ff2d55, #fb24a1);
+            color: white; border: none; border-radius: 20px; font-weight: bold;
+            cursor: pointer; font-size: 18px; margin-bottom: 10px;
+            box-shadow: 0 10px 20px rgba(255,45,85,0.3); transition: 0.3s;
         }
+        .btn-main:active { transform: scale(0.96); }
 
-        .percentage-text { font-size: 70px; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(0,0,0,0.2); }
+        .percentage-text { font-size: 85px; font-weight: 900; color: #fff; line-height: 1; margin: 15px 0; }
+
+        .floating-emoji {
+            position: fixed; bottom: -12%; font-size: 32px;
+            pointer-events: none; z-index: 1;
+            animation: floatAnim 4.5s linear forwards;
+        }
+        @keyframes floatAnim {
+            0% { transform: translateY(0) scale(0.6); opacity: 1; }
+            100% { transform: translateY(-120vh) scale(1.6) rotate(360deg); opacity: 0; }
+        }
 
         #advice-box {
-            margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.2);
-            border-radius: 15px; font-size: 14px; color: #fff; display: none;
+            margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.4);
+            border-radius: 20px; font-size: 14px; color: #ffdd00; display: none; border: 1px dashed rgba(255, 221, 0, 0.5);
         }
 
-        .share-container { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
-        .share-btn { padding: 12px; border-radius: 12px; border: none; color: white; font-size: 14px; cursor: pointer; font-weight: bold; flex: 1; }
-        .wa { background: #25D366; } .ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .share-container { display: flex; justify-content: center; gap: 12px; margin-top: 20px; }
+        .share-btn { padding: 14px; border-radius: 18px; border: none; color: white; font-size: 14px; cursor: pointer; font-weight: bold; flex: 1; transition: 0.3s; }
+        .wa { background: #25D366; } .ig { background: #f09433; }
 
-        .heart-particle {
-            position: fixed; bottom: -10%; font-size: 25px;
-            user-select: none; pointer-events: none; z-index: 1;
-            animation: floatUp 4s linear forwards;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-120vh); opacity: 0; }
-        }
-
-        .contact-us {
-            margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.3);
-        }
-        .contact-us p { font-size: 14px; color: #fff; margin-bottom: 10px; font-weight: bold; }
+        .contact-us { margin-top: 35px; border-top: 1px solid var(--border); padding-top: 25px; }
+        .contact-us p { color: #fff; font-size: 13px; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         .social-links a {
-            display: inline-block; margin: 0 10px; color: #fff; text-decoration: none; font-size: 13px;
-            background: rgba(0,0,0,0.2); padding: 5px 12px; border-radius: 20px;
+            display: inline-block; margin: 0 8px; color: #fff; text-decoration: none; font-size: 12px;
+            background: rgba(255,255,255,0.1); padding: 8px 18px; border-radius: 30px; transition: 0.3s;
         }
+        .social-links a:hover { background: #ff2d55; }
 
-        footer { margin-top: 15px; font-size: 11px; color: rgba(255,255,255,0.7); }
+        footer { margin-top: 20px; font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 3px; }
     </style>
 </head>
 <body>
 
+    <div class="bg-glow"></div>
     <audio id="loveSong" loop><source src="Real_love.mp3" type="audio/mpeg"></audio>
 
     <div id="capture-node">
         <div class="logo-text">Love Calc</div>
-        <p style="color:#fff; font-size:12px; margin-bottom: 20px; opacity: 0.8;">Created by Pritam Mistry</p>
+        <p style="color:rgba(255,255,255,0.6); font-size:11px; margin-bottom: 30px; letter-spacing: 1px;">PREMIUM | CREATED BY PRITAM MISTRY</p>
         
         <div id="input-area">
-            <input type="text" id="name1" placeholder="আপনার নাম..." autocomplete="off">
-            <input type="text" id="name2" placeholder="পার্টনারের নাম..." autocomplete="off">
-            <button class="btn-main" onclick="startAnalysis()">Calculate ❤️</button>
+            <input type="text" id="name1" placeholder="Your Name..." autocomplete="off">
+            <input type="text" id="name2" placeholder="Her Name..." autocomplete="off">
+            <button class="btn-main" onclick="startAnalysis()">Analyse Love ❤️</button>
         </div>
 
         <div id="loader" style="display:none;">
-            <div style="font-size:50px; animation: heartbeat 1s infinite;">💖</div>
-            <p style="color:white;">বিশ্লেষণ চলছে...</p>
+            <div style="font-size:65px; filter: drop-shadow(0 0 15px #ff2d55);">💖</div>
+            <p style="color:white; margin-top: 15px; font-weight: 300; letter-spacing: 1px;">Analysing Connection...</p>
         </div>
 
         <div id="result-box" style="display: none;">
-            <h3 id="names-display" style="color:#fff;"></h3>
+            <h3 id="names-display" style="color:#fff; font-weight: 400; font-size: 22px;"></h3>
             <div class="percentage-text" id="score-val">0%</div>
             
-            <div style="background: rgba(255,255,255,0.15); padding:15px; border-radius:20px; color:#fff;">
-                <b id="meme-label" style="display:block; font-size: 18px; margin-bottom: 5px;"></b>
-                <span id="final-msg"></span>
+            <div style="background: rgba(255,255,255,0.08); padding:22px; border-radius:25px; color:#fff; border: 1px solid var(--border);">
+                <b id="meme-label" style="display:block; font-size: 20px; color: #ffdd00; margin-bottom: 8px;"></b>
+                <span id="final-msg" style="opacity: 0.9; line-height: 1.4;"></span>
             </div>
 
-            <button class="btn-main" style="margin-top:15px; background:#23a6d5;" onclick="getAdvice()">Relationship Advice? 💡</button>
+            <button class="btn-main" style="margin-top:20px; background: rgba(255,255,255,0.05); border: 1px solid var(--border);" onclick="getAdvice()">Relationship Advice? 💡</button>
             <div id="advice-box"></div>
 
             <div class="share-container">
-                <button onclick="shareImageAndLink('WhatsApp')" class="share-btn wa">WhatsApp</button>
-                <button onclick="shareImageAndLink('Instagram')" class="share-btn ig">Instagram</button>
+                <button onclick="shareResult('WA')" class="share-btn wa">WhatsApp</button>
+                <button onclick="shareResult('IG')" class="share-btn ig">Instagram</button>
             </div>
 
-            <button class="btn-main" style="margin-top:10px; background:rgba(0,0,0,0.4);" onclick="downloadCard()">Save to Gallery 📸</button>
-            <p onclick="location.reload()" style="cursor:pointer; font-size:14px; color:#fff; margin-top:10px; font-weight:bold;">আবার চেষ্টা করুন 🔄</p>
+            <button class="btn-main" style="margin-top:15px; background:transparent; border: 1px solid rgba(255,255,255,0.5);" onclick="downloadCard()">Save To Gallery 📸</button>
+            <p onclick="location.reload()" style="cursor:pointer; font-size:15px; color:#0095f6; margin-top:18px; font-weight: bold;">Retry 🔄</p>
         </div>
 
         <div class="contact-us">
-            <p>Contact Us</p>
+            <p>Connect with Creator</p>
             <div class="social-links">
                 <a href="https://www.facebook.com/share/1Du24h9PiY/" target="_blank">Facebook</a>
                 <a href="https://www.instagram.com/pritamxii?igsh=MW1ja2N4MXhxMTdiYg==" target="_blank">Instagram</a>
@@ -144,102 +158,100 @@
 
     <script>
         const audio = document.getElementById('loveSong');
-        let currentScore = 0; let p1="", p2="";
+        let currentScore = 0; let n1="", n2="";
 
-        function createFloatingHearts() {
-            for(let i=0; i<20; i++) {
+        function spawnEmojis(score) {
+            let emojis = [];
+            if(score >= 90) emojis = ['❤️','💍','👰','👰‍♂️','🔥','🎈'];
+            else if(score >= 70) emojis = ['💖','✨','😍','🌹','🧿','🌈'];
+            else if(score >= 40) emojis = ['😊','🍕','🍫','🍿','🍭'];
+            else emojis = ['💀','🚩','💔','🤣','🙊','📉'];
+
+            for(let i=0; i<25; i++) {
                 setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.className = 'heart-particle';
-                    heart.innerHTML = '❤️';
-                    heart.style.left = Math.random() * 100 + 'vw';
-                    document.body.appendChild(heart);
-                    setTimeout(() => heart.remove(), 4000);
-                }, i * 200);
+                    const e = document.createElement('div');
+                    e.className = 'floating-emoji';
+                    e.innerHTML = emojis[Math.floor(Math.random()*emojis.length)];
+                    e.style.left = Math.random() * 100 + 'vw';
+                    e.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                    document.body.appendChild(e);
+                    setTimeout(() => e.remove(), 4500);
+                }, i * 180);
             }
         }
 
         function startAnalysis() {
-            p1 = document.getElementById('name1').value.trim();
-            p2 = document.getElementById('name2').value.trim();
-            if (!p1 || !p2) { alert("নাম লিখুন!"); return; }
+            n1 = document.getElementById('name1').value.trim();
+            n2 = document.getElementById('name2').value.trim();
+            if (!n1 || !n2) { alert("Please enter both names!"); return; }
             audio.play().catch(e=>{});
             document.getElementById('input-area').style.display = 'none';
             document.getElementById('loader').style.display = 'block';
             setTimeout(() => {
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('result-box').style.display = 'block';
-                showResult(p1, p2);
-            }, 2000);
+                showResult(n1, n2);
+            }, 2500);
         }
 
-        function showResult(n1, n2) {
-            document.getElementById('names-display').innerText = n1 + " + " + n2;
-            let score = ((n1.length + n2.length) * 7 + (n1.charCodeAt(0) || 0)) % 101;
-            if(score < 30) score += 40;
+        function showResult(p1, p2) {
+            document.getElementById('names-display').innerText = p1 + " + " + p2;
+            let score = ((p1.length + p2.length) * 7 + (p1.charCodeAt(0) || 0)) % 101;
+            if(score < 35) score += 30;
             currentScore = score;
             let cur = 0;
             const t = setInterval(() => {
                 if (cur >= score) {
-                    clearInterval(t); finalizeResult(score); createFloatingHearts();
+                    clearInterval(t); finalizeUI(score); spawnEmojis(score);
                 } else {
                     cur++; document.getElementById('score-val').innerText = cur + "%";
                 }
             }, 25);
         }
 
-        function finalizeResult(s) {
+        function finalizeUI(s) {
             const label = document.getElementById('meme-label');
             const msg = document.getElementById('final-msg');
-            if(s >= 90) { label.innerText="Perfect Match! 🤵👰"; msg.innerText="তোরা একদম মেড ফর ইচ আদার!"; confetti(); }
-            else if(s >= 70) { label.innerText="Super Chemistry! ✨"; msg.innerText="সম্পর্কটা দারুণ ভাবে এগিয়ে নিয়ে চলো!"; }
-            else { label.innerText="Need Efforts! 💀"; msg.innerText="একটু বেশি সময় দাও একে অপরকে।"; }
+            if(s >= 90) { label.innerText="Perfect Match! 🤵👰"; msg.innerText="তোরা একদম 'মেড ফর ইচ আদার'! বিরিয়ানির লেগ পিসটা আমার জন্য বুক রাখিস।"; confetti(); }
+            else if(s >= 70) { label.innerText="Super Chemistry! ✨"; msg.innerText="জাস্ট ফাটিয়ে দে দোস্ত। তোদের জুটি কিন্তু হেব্বি জোস।"; }
+            else if(s >= 40) { label.innerText="Good Friends! 😊"; msg.innerText="আগে ফুচকা খাইয়ে পটাও, তারপর সিরিয়াসলি ভাবা যাবে।"; }
+            else { label.innerText="Danger Zone! 💀"; msg.innerText="ভাই এখনই পালানোর রাস্তা খোঁজ, তোর কপালে দুঃখ আছে!"; }
         }
 
         function getAdvice() {
-            const advices = ["আজই ফুচকা খাওয়াও!", "বেশি সন্দেহ কোরো না!", "সারপ্রাইজ গিফট দাও!", "একসাথে মুভি দেখো!", "মাঝেমধ্যে সরি বলো!"];
+            const advices = ["আজই ফুচকা খাওয়াও!", "বেশি সন্দেহ কোরো না!", "সারপ্রাইজ গিফট দাও!", "ওর সাকসেসে তালি দাও!", "একসাথে মুভি দেখো!", "মাঝেমধ্যে সরি বলো!", "ওর জন্মদিনে উইশ করতে ভুলো না!", "একটু সময় দাও একে অপরকে!"];
             const box = document.getElementById('advice-box');
             box.style.display = 'block';
             box.innerText = "💡 Advice: " + advices[Math.floor(Math.random() * advices.length)];
         }
 
-        // --- ইমেজ এবং লিঙ্ক শেয়ারিং ম্যাজিক ---
-        async function shareImageAndLink(platform) {
-            const node = document.getElementById('capture-node');
-            
-            // বাটন সাময়িকভাবে লুকানো
-            const elements = document.querySelectorAll('.btn-main, .share-container, .contact-us, footer');
-            elements.forEach(el => el.style.visibility = 'hidden');
-
-            const canvas = await html2canvas(node, { scale: 2, backgroundColor: null });
-            const dataUrl = canvas.toDataURL("image/png");
-            const blob = await (await fetch(dataUrl)).blob();
-            const file = new File([blob], 'LoveResult.png', { type: 'image/png' });
-
-            elements.forEach(el => el.style.visibility = 'visible');
-
+        async function shareResult(platform) {
+            const text = `আমার আর ${n2}-এর ভালোবাসার স্কোর ${currentScore}%! ❤️ চেক করো তোমারটা এই লিঙ্কে: ${window.location.href}`;
             if (navigator.share) {
                 try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Love Calculator Result',
-                        text: `আমার আর ${p2}-এর ভালোবাসার স্কোর ${currentScore}%! ❤️ চেক করো তোমারটা এই লিঙ্কে: ${window.location.href}`,
-                    });
-                } catch (err) {
-                    alert(`${platform}-এ শেয়ার করতে হলে আগে ইমেজটি সেভ করে নিন।`);
+                    const node = document.getElementById('capture-node');
+                    const canvas = await html2canvas(node, { scale: 2 });
+                    const blob = await (await fetch(canvas.toDataURL())).blob();
+                    const file = new File([blob], 'Result.png', { type: 'image/png' });
+                    await navigator.share({ files: [file], title: 'Love Calc', text: text });
+                } catch (e) {
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
                 }
             } else {
-                alert("আপনার ব্রাউজার সরাসরি শেয়ার সাপোর্ট করছে না। রেজাল্টটি সেভ করে শেয়ার করুন।");
+                alert("ব্রাউজার শেয়ারিং সাপোর্ট করছে না। ইমেজ সেভ করে শেয়ার করো।");
             }
         }
 
         function downloadCard() {
             const node = document.getElementById('capture-node');
-            html2canvas(node, { scale: 3 }).then(canvas => {
+            const elements = document.querySelectorAll('.btn-main, .share-container, .contact-us, footer, p');
+            elements.forEach(el => el.style.visibility = 'hidden');
+            html2canvas(node, { scale: 3, backgroundColor: null }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `Love_Result_Pritam.png`;
                 link.href = canvas.toDataURL();
                 link.click();
+                elements.forEach(el => el.style.visibility = 'visible');
             });
         }
     </script>
