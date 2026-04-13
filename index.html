@@ -35,8 +35,8 @@
 
         #capture-node {
             background-color: white;
-            width: 90%;
-            max-width: 400px;
+            width: 95%;
+            max-width: 420px;
             padding: 40px 25px;
             text-align: center;
             border-radius: 30px;
@@ -69,9 +69,9 @@
         }
 
         .funky-msg {
-            font-size: 18px;
-            line-height: 1.6;
-            padding: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+            padding: 15px;
             background: #fff5f6;
             border-radius: 20px;
             border: 2px dashed #ff9a9e;
@@ -107,18 +107,18 @@
         .btn-calculate:active { transform: scale(0.95); }
 
         .percentage-text {
-            font-size: 75px;
+            font-size: 65px;
             font-weight: 900;
             color: #ed4956;
-            margin: 10px 0;
+            margin: 5px 0;
             text-shadow: 2px 2px 10px rgba(237, 73, 86, 0.2);
         }
 
         #names-display {
-            font-size: 22px;
+            font-size: 20px;
             color: #2c3e50;
             font-weight: 800;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         #music-toggle {
@@ -132,6 +132,7 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 20px;
+            z-index: 10;
         }
 
         footer { 
@@ -173,7 +174,7 @@
             <div id="names-display"></div>
             <div class="percentage-text" id="score-val">0%</div>
             <div class="funky-msg" id="msg-container">
-                <b id="meme-label" style="display:block; color:#d63031; margin-bottom:8px; font-size: 20px;"></b>
+                <b id="meme-label" style="display:block; color:#d63031; margin-bottom:8px; font-size: 18px;"></b>
                 <span id="final-msg"></span>
             </div>
             
@@ -206,7 +207,7 @@
             const n2 = document.getElementById('name2').value.trim();
             
             if (!n1 || !n2) { 
-                alert("দয়া করে দুটি নামই লিখুন! 😂"); 
+                alert("দয়া করে দুটি নামই লিখুন! 😂"); 
                 return; 
             }
 
@@ -227,8 +228,10 @@
             
             document.getElementById('names-display').innerText = n1 + " 💖 " + n2;
 
+            // Logic for calculation
             let score = ((n1.length + n2.length) * 7 + (n1.charCodeAt(0) || 0)) % 101;
-            if (score < 30) score += 30; 
+            
+            // Easter egg for certain names (optional)
             if ((n1+n2).toLowerCase().includes("ahana")) score = 100;
 
             let current = 0;
@@ -240,27 +243,140 @@
                     current++;
                     document.getElementById('score-val').innerText = current + "%";
                 }
-            }, 25);
+            }, 20);
         }
 
         function finalizeUI(val) {
             const label = document.getElementById('meme-label');
             const msgEl = document.getElementById('final-msg');
             
-            if (val >= 90) {
-                label.innerText = "Rab Ne Bana Di Jodi 👰";
-                msgEl.innerText = "তোরা তো পুরো পারফেক্ট! বিয়েতে বিরিয়ানির লেগ পিসটা আমার জন্য বুক করে রাখ।";
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            } else if (val >= 70) {
-                label.innerText = "Jalwa Hai Hamara! ✨";
-                msgEl.innerText = "তোদের কেমিস্ট্রি দেখে আইনিস্টাইনও অবাক হয়ে যেত! জাস্ট ফাটিয়ে দে দোস্ত।";
-            } else if (val >= 45) {
-                label.innerText = "Gajab Bejjati Hai! 🤣";
-                msgEl.innerText = "স্কোর তো এভারেজ! ব্রেক-আপ ঠেকাতে আজই দামী কোনো গিফট কিনে দে।";
-            } else {
-                label.innerText = "Beta Tumse Na Ho Payega! 💀";
-                msgEl.innerText = "ভাই তুই বরং সিঙ্গেল থাকাই প্র্যাকটিস কর! তোর কপালে দুঃখ আছে।";
-            }
+            const memeDatabase = {
+                range90: [
+                    {l: "Rab Ne Bana Di Jodi 🤵👰", m: "তোরা তো পুরো পারফেক্ট! বিয়েতে বিরিয়ানির লেগ পিসটা আমার জন্য বুক করে রাখ।"},
+                    {l: "Soulmates Found! ✨", m: "তোদের ভালোবাসা দেখে মনে হচ্ছে মজনুও হিংসে করবে!"},
+                    {l: "Power Couple ⚡", m: "তোদের কেমিস্ট্রি তো পর্যায় সারণীর সব এলিমেন্টকেও হার মানাবে।"},
+                    {l: "Legendary Love ❤️", m: "তোমাদের মিল দেখে মনে হচ্ছে তোমরা গত সাত জন্ম ধরে একসাথে আছো।"},
+                    {l: "Kazi Office Ready? 📝", m: "আর দেরি করিস না, জাস্ট শুভ কাজটা সেরে ফেল!"},
+                    {l: "Ideal Couple 🏆", m: "তোদের জোড়া একদম স্বর্গ থেকে তৈরি হয়ে এসেছে।"},
+                    {l: "No Words! 😍", m: "এত মিল? আমি তো বিশ্বাসই করতে পারছি না। জাস্ট অসাম!"},
+                    {l: "Sweetest Love 🍬", m: "তোমাদের ভালোবাসা রসগোল্লার থেকেও বেশি মিষ্টি।"},
+                    {l: "Pure Magic 🪄", m: "তোমাদের বন্ধন জাদুর মতো, এটাকে সবসময় আগলে রেখো।"},
+                    {l: "Endless Romance 🌹", m: "তোমাদের গল্পের শেষ নেই, এটা চলতেই থাকুক হাজার বছর।"}
+                ],
+                range80: [
+                    {l: "Super Hit Jodi! 🎬", m: "তোদের জুটি একদম ব্লকবাস্টার সিনেমার মতো হিট!"},
+                    {l: "So Much Love! 💖", m: "তোদের কেমিস্ট্রি দেখে আইনিস্টাইনও অবাক হয়ে যেত।"},
+                    {l: "Chemistry King 🧪", m: "একদম দারুণ মিল! জাস্ট একে অপরের ওপর ভরসা রাখিস।"},
+                    {l: "Dream Team 🌈", m: "তোমাদের ভালোবাসা অনেক মানুষের জন্য ইন্সপিরেশন হতে পারে।"},
+                    {l: "Aww So Cute! 🥰", m: "তোমাদের ছবি দেখলে তো ফোনের স্ক্রিনেও পিঁপড়ে ধরবে!"},
+                    {l: "True Bonding 🤝", m: "তোমাদের মধ্যে বোঝাপড়াটা দেখার মতো।"},
+                    {l: "Heart To Heart ❤️", m: "তোমাদের হৃদস্পন্দন যেন একই ছন্দে চলে।"},
+                    {l: "Lovely Vibes ✨", m: "তোমাদের চারপাশটা সবসময় পজিটিভ ভাইব দিয়ে ঘেরা থাকে।"},
+                    {l: "Solid Support 💪", m: "একজন অন্যজনের শক্তির উৎস, এটা বজায় রেখো।"},
+                    {l: "Sparkling Eyes 👀", m: "তোমাদের চোখের দিকে তাকালেই ভালোবাসা বোঝা যায়।"}
+                ],
+                range70: [
+                    {l: "Jalwa Hai Hamara! ✨", m: "বেশ ভালো! তবে মাঝেমধ্যে একটু ফুচকা পার্টি দিতে ভুলো না।"},
+                    {l: "Sweet Hearts 🍭", m: "সম্পর্কটা বেশ মিষ্টি, তবে মাঝেমধ্যে ইগোটা দূরে রেখো।"},
+                    {l: "Almost Perfect 🎯", m: "আরেকটু যত্ন নিলেই তোমরা ১০০/১০০ হয়ে যাবে।"},
+                    {l: "Good Going! 🚀", m: "তোমাদের ট্রেন একদম সঠিক লাইনেই যাচ্ছে।"},
+                    {l: "Nice Connection 📞", m: "সিগন্যাল বেশ স্ট্রং, তবে রিচার্জ করতে ভুলো না!"},
+                    {l: "Happy Vibes 😊", m: "তোমাদের দেখে মনটা ভালো হয়ে যায়।"},
+                    {l: "Love In The Air ☁️", m: "আশেপাশে সব জায়গায় শুধু ভালোবাসার গন্ধ!"},
+                    {l: "Cute Fights 🥊", m: "একটু একটু ঝগড়া আর অনেক অনেক ভালোবাসা।"},
+                    {l: "Trust Is High 🛡️", m: "তোমাদের বিশ্বাসই তোমাদের সম্পর্কের মূল চাবিকাঠি।"},
+                    {l: "Beautiful Pair 🖼️", m: "ফ্রেম করে রাখার মতো চমৎকার একটি জুটি।"}
+                ],
+                range60: [
+                    {l: "Adjustment Is Key 🔑", m: "ভালোবাসা আছে, তবে মাঝেমধ্যে একটু স্যাক্রিফাইস করতে হবে।"},
+                    {l: "Safe Zone ✅", m: "তোমাদের সম্পর্কটা স্থিতিশীল, এভাবেই এগিয়ে যাও।"},
+                    {l: "Keep Trying 🛠️", m: "আরেকটু সময় দাও একে অপরকে, আরও ভালো হবে।"},
+                    {l: "Good Friends? 👫", m: "ভালোবাসার আগে তোমরা ভালো বন্ধু, এটাই বড় কথা।"},
+                    {l: "Moderate Love ⚖️", m: "খুব বেশি মাখামাখি নেই, তবে টানটা কিন্তু ভেতর থেকে।"},
+                    {l: "Slow & Steady 🐢", m: "আস্তে আস্তে এগোও, সম্পর্কের ভিত শক্ত হবে।"},
+                    {l: "Better Together ➕", m: "একা থাকার চেয়ে তোমরা একসাথে থাকলেই বেশি মানায়।"},
+                    {l: "Warm Hearts 🔥", m: "তোমাদের মধ্যে একটা উষ্ণতা আছে যা সবসময় থাকে।"},
+                    {l: "Simple & Sweet 🍯", m: "খুব বেশি নাটক নেই, একদম সহজ সরল ভালোবাসা।"},
+                    {l: "Steady Pace 🏃", m: "তোমাদের জার্নিটা লম্বা হোক এটাই কামনা করি।"}
+                ],
+                range50: [
+                    {l: "Gajab Bejjati Hai! 🤣", m: "স্কোর তো একদম বর্ডার লাইনে! ব্রেক-আপ ঠেকাতে আজই গিফট দে।"},
+                    {l: "Fifty-Fifty 🌓", m: "অর্ধেক ভালোবাসা আর অর্ধেক সন্দেহ? একটু সামলে ভাই!"},
+                    {l: "Neutral Gear ⚙️", m: "সম্পর্কটা না এগোচ্ছে না পেছাচ্ছে! একটা ধাক্কা দরকার।"},
+                    {l: "Confusion Hi Confusion 🤔", m: "তোরা ঠিক কী চাস নিজেরাই জানিস না বোধহয়!"},
+                    {l: "Need More Date ☕", m: "বেশি করে ডেটে যা, নইলে কিন্তু অন্য কেউ সুযোগ নেবে।"},
+                    {l: "Middle Path 🛣️", m: "একদম মাঝামাঝি অবস্থা! হয় এপার নয় ওপার হতে হবে।"},
+                    {l: "Work In Progress 🏗️", m: "সম্পর্কটা এখনো আন্ডার কনস্ট্রাকশন মোডে আছে।"},
+                    {l: "Average Jodi 😐", m: "খুব একটা খারাপ না, আবার খুব একটা ভালোও না।"},
+                    {l: "Keep Talking 🗣️", m: "কথোপকথন বাড়িয়ে দাও, ভুল বোঝাবুঝি কমবে।"},
+                    {l: "Try Harder 💪", m: "আরেকটু এফোর্ট দিলে রেজাল্ট আরও ভালো আসতে পারতো।"}
+                ],
+                range40: [
+                    {l: "Warning Alert ⚠️", m: "ভাই, তুই কি নিশ্চিত সে তোকেই ভালোবাসে? একটু চেক করিস!"},
+                    {l: "Thoda Sambhal Ke 🚶‍♂️", m: "পিচ্ছিল রাস্তা! যেকোনো সময় হোঁচট খেতে পারো।"},
+                    {l: "Distance Increasing 📏", m: "তোমাদের মধ্যে দূরত্ব বাড়ছে, একটু কাছে আসার চেষ্টা করো।"},
+                    {l: "Cold Vibes ❄️", m: "ভালোবাসার উত্তাপটা কেন জানি কমে গেছে!"},
+                    {l: "Only Messaging? 📱", m: "শুধু মেসেজ করলে হবে না, সামনাসামনি দেখাও করতে হবে।"},
+                    {l: "Low Battery 🔋", m: "তোমাদের সম্পর্কের চার্জ প্রায় শেষের পথে!"},
+                    {l: "Change Style ✨", m: "পুরনো ঝগড়া বাদ দাও, নতুন করে শুরু করো।"},
+                    {l: "Missing Spark ✨", m: "ভেতরের সেই স্পার্কটা যেন কোথায় হারিয়ে গেছে।"},
+                    {l: "Hard Luck 🍀", m: "ভাগ্য খুব একটা সহায় নেই তোমাদের ওপর।"},
+                    {l: "Take A Break ⏸️", m: "মাঝেমধ্যে একটু বিরতি নেওয়াটাও জরুরি।"}
+                ],
+                range30: [
+                    {l: "Beta Tumse Na Ho Payega! 💀", m: "ভাই তুই বরং সিঙ্গেল থাকাই প্র্যাকটিস কর! তোর কপালে দুঃখ আছে।"},
+                    {l: "Moye Moye 🎵", m: "তোর কপালটাই খারাপ ভাই, পরের জন্মে চেষ্টা করিস!"},
+                    {l: "Friendzone Alert 🛑", m: "তুই তো অলরেডি ফ্রেন্ডজোনড হওয়ার পথে!"},
+                    {l: "No Chemistry 🧪", m: "তোদের তো পিরিয়ডিক টেবিলে কোনো জায়গাই নেই।"},
+                    {l: "Sad Life 😔", m: "ভালোবাসার চেয়ে বিরহে থাকাই তোদের বেশি মানাবে।"},
+                    {l: "One Sided? ☝️", m: "একতরফা ভালোবাসা না তো? একটু ভালো করে খোঁজ নে।"},
+                    {l: "Exit Gate 🚪", m: "বেরোনোর দরজাটা খুব কাছেই, ভেবে দেখ একবার।"},
+                    {l: "Empty Heart 💔", m: "হৃদয়টা খালি পড়ে আছে, সেখানে ভালোবাসার দেখা নেই।"},
+                    {l: "Big Mistake ❌", m: "সম্পর্কটা শুরু করাই হয়তো একটা ভুল ছিল।"},
+                    {l: "Better Luck Next Time 🎲", m: "এবার হলো না, পরের বার কোনো ভালো অপশন খুঁজিস।"}
+                ],
+                range20: [
+                    {l: "Risky Business 🧨", m: "তোর গার্লফ্রেন্ড তোর মেসেজ সিন করে রিপ্লাই দেয় তো?"},
+                    {l: "Red Flag Alert 🚩", m: "বন্ধু, তোর সামনে বিপদ! এখনই পালানোর রাস্তা খোঁজ।"},
+                    {l: "Broken Dreams 🏚️", m: "স্বপ্নগুলো সব ভেঙে চুরমার হয়ে যাওয়ার আগেই পালা!"},
+                    {l: "No Hope 🚫", m: "আশা করে লাভ নেই, কপালে বিয়ের ফুল ফোটেনি।"},
+                    {l: "Serious Issue 🚑", m: "তোর সম্পর্কের অবস্থা আইসিইউ তে!"},
+                    {l: "Wrong Number 📞", m: "তুই ভুল জায়গায় কল করেছিস ভাই, এটা তোর জন্য না।"},
+                    {l: "Total Waste 🗑️", m: "সময় আর আবেগ দুটোই নষ্ট হচ্ছে তোর।"},
+                    {l: "Zero Logic 🧠", m: "তোদের একসাথে থাকার কোনো যুক্তিই খুঁজে পাচ্ছি না।"},
+                    {l: "Run Bro Run! 🏃‍♂️", m: "পিছনে না তাকিয়ে দৌড়ে পালিয়ে যা!"},
+                    {l: "Silent Treatment 🙊", m: "তোমাদের মধ্যে কথা হওয়ার চেয়ে চুপ থাকাটাই বেশি মঙ্গল।"}
+                ],
+                range0: [
+                    {l: "Aila, Jadu! 👽", m: "তোদের তো মুখ দেখাদেখি বন্ধ হওয়ার কথা! ক্যালকুলেটর হ্যাং হয়ে গেছে।"},
+                    {l: "Error 404: Not Found 🚫", m: "ভালোবাসা তো দূরের কথা, তোমাদের মধ্যে তো ঝগড়াও ঠিকমতো হয় না!"},
+                    {l: "Beyond Science 🧪", m: "তোদের সম্পর্কটা বিজ্ঞানের সব সূত্রের বাইরে!"},
+                    {l: "Impossible Task 🏔️", m: "হিমালয় চড়া সহজ, কিন্তু তোদের একসাথে থাকা অসম্ভব।"},
+                    {l: "Ghosted 👻", m: "তুই কি ভূতের সাথে প্রেম করছিস নাকি? কোনো রেসপন্স নেই যে!"},
+                    {l: "Better Be Single 🕺", m: "সিঙ্গেল থাকার মজাই আলাদা ভাই, তুই সেটাই এনজয় কর।"},
+                    {l: "Joke Of The Year 😂", m: "তোদের ভালোবাসাটা এই বছরের সেরা কৌতুক হতে পারে।"},
+                    {l: "Game Over 🎮", m: "খেলা শেষ! বাড়ি ফিরে গিয়ে পড়াশোনায় মন দে।"},
+                    {l: "Disaster! 🌪️", m: "তোরা দুজন একসাথে থাকা মানে একটা প্রাকৃতিক বিপর্যয়!"},
+                    {l: "Wake Up! ⏰", m: "ভাই ঘুম থেকে ওঠ, তুই স্বপ্ন দেখছিস!"}
+                ]
+            };
+
+            let list;
+            if (val >= 90) { list = memeDatabase.range90; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); }
+            else if (val >= 80) list = memeDatabase.range80;
+            else if (val >= 70) list = memeDatabase.range70;
+            else if (val >= 60) list = memeDatabase.range60;
+            else if (val >= 50) list = memeDatabase.range50;
+            else if (val >= 40) list = memeDatabase.range40;
+            else if (val >= 30) list = memeDatabase.range30;
+            else if (val >= 20) list = memeDatabase.range20;
+            else list = memeDatabase.range0;
+
+            // Random selection from the list
+            const result = list[Math.floor(Math.random() * list.length)];
+            
+            label.innerText = result.l;
+            msgEl.innerText = result.m;
         }
 
         function downloadCard() {
