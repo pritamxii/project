@@ -1,336 +1,1143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Calc Ultra Pro - Pritam Mistry</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root { --neon: #ff4d6d; --glass: rgba(255, 255, 255, 0.25); --border: rgba(255, 255, 255, 0.4); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body {
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 10px; color: #333;
-        }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Daily Task Master 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --sage: #7c9e87;
+    --sage-light: #a8c5b0;
+    --sage-dark: #5a7a64;
+    --lavender: #9b8ec4;
+    --lavender-light: #c4b9e8;
+    --lavender-dark: #7a6aaa;
+    --bg: #f0ede8;
+    --card: #ffffff;
+    --text: #2d3436;
+    --text-light: #636e72;
+    --red: #e74c3c;
+    --gold: #f39c12;
+    --silver: #95a5a6;
+    --copper: #cd6133;
+    --row0: #fef9f0;
+    --row1: #f0f7f4;
+    --row2: #f4f0f9;
+    --row3: #f0f4ff;
+    --row4: #fff0f3;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --radius: 16px;
+  }
 
-        #capture-node {
-            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border); width: 100%; max-width: 450px;
-            padding: 25px 15px; border-radius: 40px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        .logo-text { font-family: 'Brush Script MT', cursive; font-size: 3.5rem; background: linear-gradient(45deg, #ff4d6d, #ff8fa3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        input, select { 
-            width: 100%; padding: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.6); 
-            border-radius: 12px; margin-bottom: 8px; outline: none; font-size: 13px;
-        }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-        .btn-main { 
-            width: 100%; padding: 15px; border: none; border-radius: 15px; background: linear-gradient(45deg, #ff4d6d, #ff8fa3);
-            color: white; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px;
-        }
+  /* SPLASH */
+  #splash {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, var(--sage-dark) 0%, var(--lavender-dark) 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 24px;
+  }
+  .splash-logo {
+    width: 90px; height: 90px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    animation: splashPulse 1.5s ease-in-out infinite;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  @keyframes splashPulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  .splash-title { color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px; text-align: center; }
+  .splash-subtitle { color: rgba(255,255,255,0.7); font-size: 13px; letter-spacing: 3px; text-transform: uppercase; }
+  .splash-bar-wrap { width: 220px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; }
+  .splash-bar { height: 100%; background: white; border-radius: 10px; width: 0; animation: loadBar 2s ease forwards; }
+  @keyframes loadBar {
+    0% { width: 0; } 30% { width: 40%; } 60% { width: 70%; } 100% { width: 100%; }
+  }
+  #splash.hide { animation: splashFade 0.6s ease forwards; }
+  @keyframes splashFade { to { opacity: 0; pointer-events: none; } }
 
-        .option-btn { 
-            display: block; width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--border);
-            background: rgba(255,255,255,0.8); border-radius: 10px; cursor: pointer; text-align: left; font-size: 14px;
-        }
-        .option-btn:hover { background: #ff4d6d; color: white; }
-        
-        .meter-container { width: 120px; height: 60px; position: relative; margin: 15px auto; overflow: hidden; border-radius: 100px 100px 0 0; background: #eee; }
-        #meter-fill { position: absolute; top: 100%; left: 50%; width: 100%; height: 100%; background: #ff4d6d; transform-origin: top center; transform: translateX(-50%) rotate(0deg); transition: 2s; }
-        
-        .tips-box { background: rgba(255,255,255,0.5); padding: 15px; border-radius: 15px; margin-top: 15px; border: 1px dashed #ff4d6d; font-size: 13px; font-style: italic; color: #444; line-height: 1.5; text-align: left; }
+  /* APP */
+  #app { display: none; max-width: 480px; margin: 0 auto; padding-bottom: 40px; }
+  #app.visible { display: block; }
 
-        #rating-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
-        }
-        .modal-content { background: white; padding: 25px; border-radius: 25px; width: 90%; max-width: 350px; text-align: center; }
-        .stars { font-size: 35px; cursor: pointer; color: #ccc; margin: 10px 0; }
-        .stars span.active { color: #f1c40f; }
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--sage-dark), var(--lavender-dark));
+    padding: 20px 20px 28px;
+    position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 160px; height: 160px; background: rgba(255,255,255,0.07); border-radius: 50%;
+  }
+  .header::after {
+    content: ''; position: absolute; bottom: -30px; left: -20px;
+    width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%;
+  }
+  .header-top {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 4px;
+  }
+  .header-logo { font-size: 22px; }
+  .header-title { color: white; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.15);
+    border: none; border-radius: 12px;
+    color: white; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.25); }
+  .header-date { color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 2px; }
 
-        .contact-us { margin-top: 25px; border-top: 1px solid var(--border); padding-top: 15px; }
-        .social-links a {
-            display: inline-block; margin: 0 5px; color: #333; text-decoration: none;
-            font-size: 10px; background: rgba(255,255,255,0.4); padding: 6px 12px; border-radius: 20px; font-weight: bold;
-        }
-    </style>
+  /* MONTH NAV */
+  .month-nav {
+    background: white;
+    padding: 10px 16px;
+    display: flex; align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .month-nav-btn {
+    width: 36px; height: 36px;
+    background: var(--bg);
+    border: none; border-radius: 12px;
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; color: var(--text);
+    font-weight: 700;
+  }
+  .month-nav-btn:hover { background: var(--lavender-light); color: white; }
+  .month-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .month-nav-btn:disabled:hover { background: var(--bg); color: var(--text); }
+  .month-label-wrap { text-align: center; }
+  .month-label {
+    font-size: 16px; font-weight: 800; color: var(--text);
+    letter-spacing: 0.3px;
+  }
+  .month-label-sub {
+    font-size: 11px; color: var(--text-light);
+    margin-top: 1px;
+  }
+  .today-jump-btn {
+    font-size: 11px;
+    background: var(--sage);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 3px 9px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 3px;
+    display: inline-block;
+    transition: opacity 0.2s;
+  }
+  .today-jump-btn:hover { opacity: 0.85; }
+
+  /* CALENDAR */
+  .calendar-wrap {
+    background: white;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .calendar-scroll {
+    display: flex; gap: 8px;
+    overflow-x: auto; padding: 4px 16px;
+    scrollbar-width: none;
+  }
+  .calendar-scroll::-webkit-scrollbar { display: none; }
+  .day-pill {
+    flex-shrink: 0;
+    display: flex; flex-direction: column;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 14px; cursor: pointer;
+    background: var(--bg);
+    border: 2px solid transparent;
+    transition: all 0.2s; min-width: 52px;
+    position: relative;
+  }
+  .day-pill:hover { background: var(--lavender-light); }
+  .day-pill.active {
+    background: linear-gradient(135deg, var(--sage), var(--lavender));
+    color: white;
+  }
+  .day-pill.today { border-color: var(--red); }
+  .day-pill.today .today-tag {
+    position: absolute; top: -8px;
+    background: var(--red); color: white;
+    font-size: 8px; font-weight: 700;
+    padding: 1px 5px; border-radius: 6px; letter-spacing: 0.5px;
+  }
+  .day-pill.has-tasks::after {
+    content: '';
+    position: absolute; bottom: 4px;
+    width: 5px; height: 5px;
+    background: var(--sage);
+    border-radius: 50%;
+  }
+  .day-pill.active.has-tasks::after { background: rgba(255,255,255,0.7); }
+  .day-name { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; }
+  .day-num { font-size: 18px; font-weight: 800; line-height: 1.2; }
+  .day-pill.active .day-name,
+  .day-pill.active .day-num { opacity: 1; color: white; }
+
+  /* SCORE CARD */
+  .score-card {
+    margin: 16px; background: white;
+    border-radius: var(--radius); padding: 18px;
+    box-shadow: var(--shadow); display: flex; gap: 16px; align-items: center;
+  }
+  .score-ring { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+  .score-ring svg { width: 80px; height: 80px; transform: rotate(-90deg); }
+  .score-ring circle { fill: none; stroke-width: 7; stroke-linecap: round; }
+  .ring-bg { stroke: #f0ede8; }
+  .ring-fg {
+    stroke: var(--sage); stroke-dasharray: 220; stroke-dashoffset: 220;
+    transition: stroke-dashoffset 1s ease, stroke 0.5s;
+  }
+  .score-text {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: var(--text);
+  }
+  .score-info { flex: 1; }
+  .score-label { font-size: 13px; color: var(--text-light); margin-bottom: 4px; }
+  .score-pts { font-size: 22px; font-weight: 800; color: var(--text); }
+  .score-pts span { font-size: 13px; font-weight: 500; color: var(--text-light); }
+
+  /* MONTH SUMMARY STRIP */
+  .month-summary {
+    margin: 0 16px 16px;
+    background: white; border-radius: var(--radius);
+    padding: 14px 18px; box-shadow: var(--shadow);
+    display: flex; gap: 0; overflow: hidden;
+  }
+  .summary-item {
+    flex: 1; text-align: center;
+    padding: 6px 4px;
+    border-right: 1px solid #f0ede8;
+  }
+  .summary-item:last-child { border-right: none; }
+  .summary-val { font-size: 20px; font-weight: 800; color: var(--text); }
+  .summary-lbl { font-size: 10px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* ACHIEVEMENT */
+  .achievement-box {
+    margin: 0 16px 16px;
+    background: linear-gradient(135deg, #fff8e1, #f3e5f5);
+    border-radius: var(--radius); padding: 14px 18px;
+    box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px;
+    border: 1px solid rgba(243,156,18,0.2);
+  }
+  .medal { font-size: 32px; }
+  .achieve-info { flex: 1; }
+  .achieve-title { font-size: 15px; font-weight: 800; color: var(--text); }
+  .achieve-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .monthly-rank {
+    font-size: 13px; font-weight: 700;
+    padding: 5px 10px; border-radius: 10px;
+    background: rgba(155,142,196,0.15); color: var(--lavender-dark);
+    white-space: nowrap;
+  }
+
+  /* ADD TASK */
+  .add-section {
+    margin: 0 16px 16px; background: white;
+    border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+  }
+  .add-section h3 {
+    font-size: 14px; font-weight: 700; color: var(--text-light);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
+  }
+  .add-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .add-input {
+    flex: 1; padding: 10px 14px; border: 2px solid #eee;
+    border-radius: 12px; font-size: 14px; font-family: inherit;
+    outline: none; transition: border-color 0.2s; background: var(--bg);
+  }
+  .add-input:focus { border-color: var(--sage); }
+  .pts-input {
+    width: 70px; padding: 10px; border: 2px solid #eee;
+    border-radius: 12px; font-size: 14px; font-family: inherit;
+    outline: none; background: var(--bg); text-align: center;
+    transition: border-color 0.2s;
+  }
+  .pts-input:focus { border-color: var(--lavender); }
+  .add-btn {
+    width: 100%; padding: 12px;
+    background: linear-gradient(135deg, var(--sage), var(--lavender));
+    border: none; border-radius: 12px; color: white;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    letter-spacing: 0.5px; transition: opacity 0.2s, transform 0.1s;
+  }
+  .add-btn:hover { opacity: 0.9; }
+  .add-btn:active { transform: scale(0.98); }
+
+  /* TASK LIST */
+  .task-section { margin: 0 16px 16px; }
+  .task-section-header {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 10px; padding: 0 4px;
+  }
+  .task-section-title { font-size: 14px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+  .task-count { font-size: 12px; background: var(--sage-light); color: white; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+  .task-list { display: flex; flex-direction: column; gap: 8px; }
+  .task-item {
+    display: flex; align-items: center;
+    padding: 14px 14px; border-radius: 14px; gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative; overflow: hidden;
+  }
+  .task-item::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: var(--sage); border-radius: 4px 0 0 4px;
+  }
+  .task-item.done::before { background: var(--lavender); }
+  .task-item:active { transform: scale(0.99); }
+  .task-item.row-0 { background: var(--row0); }
+  .task-item.row-1 { background: var(--row1); }
+  .task-item.row-2 { background: var(--row2); }
+  .task-item.row-3 { background: var(--row3); }
+  .task-item.row-4 { background: var(--row4); }
+  .task-check {
+    width: 26px; height: 26px; border-radius: 8px;
+    border: 2.5px solid var(--sage-light); background: white;
+    cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; font-size: 14px;
+  }
+  .task-check.checked {
+    background: linear-gradient(135deg, var(--sage), var(--lavender));
+    border-color: transparent; color: white;
+  }
+  .task-body { flex: 1; min-width: 0; }
+  .task-name {
+    font-size: 15px; font-weight: 600; color: var(--text);
+    transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .task-item.done .task-name { text-decoration: line-through; color: var(--text-light); }
+  .task-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .task-pts-badge {
+    background: linear-gradient(135deg, var(--sage-light), var(--lavender-light));
+    color: white; font-size: 12px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+  }
+  .task-actions { display: flex; gap: 4px; }
+  .task-edit-btn, .task-del-btn {
+    width: 30px; height: 30px; border: none; border-radius: 8px;
+    cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+  }
+  .task-edit-btn { background: rgba(155,142,196,0.15); color: var(--lavender-dark); }
+  .task-del-btn { background: rgba(231,76,60,0.1); color: var(--red); }
+  .task-edit-btn:hover { background: rgba(155,142,196,0.3); }
+  .task-del-btn:hover { background: rgba(231,76,60,0.2); }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; font-weight: 500; }
+  .empty-state small { font-size: 12px; }
+
+  /* JOURNAL */
+  .journal-section {
+    margin: 0 16px 16px; background: white;
+    border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+  }
+  .journal-section h3 {
+    font-size: 14px; font-weight: 700; color: var(--text-light);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .journal-textarea {
+    width: 100%; min-height: 100px; padding: 12px;
+    border: 2px solid #eee; border-radius: 12px; font-size: 14px;
+    font-family: inherit; resize: vertical; outline: none;
+    background: var(--bg); color: var(--text); transition: border-color 0.2s; line-height: 1.5;
+  }
+  .journal-textarea:focus { border-color: var(--lavender); }
+  .save-journal-btn {
+    margin-top: 8px; padding: 9px 20px; background: var(--lavender);
+    border: none; border-radius: 10px; color: white;
+    font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+  }
+  .save-journal-btn:hover { opacity: 0.85; }
+
+  /* HISTORY TOGGLE */
+  .history-toggle-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: calc(100% - 32px); margin: 0 16px 16px;
+    padding: 14px; background: white;
+    border: 2px dashed var(--sage-light); border-radius: var(--radius);
+    cursor: pointer; color: var(--sage-dark);
+    font-size: 14px; font-weight: 700; transition: all 0.2s; font-family: inherit;
+  }
+  .history-toggle-btn:hover { background: var(--row1); border-color: var(--sage); }
+
+  /* HISTORY */
+  #historySection { margin: 0 16px 16px; display: none; }
+  #historySection.open { display: block; }
+  .history-card {
+    background: white; border-radius: var(--radius);
+    padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px;
+  }
+  .history-card h3 {
+    font-size: 15px; font-weight: 800; margin-bottom: 14px;
+    color: var(--text); display: flex; align-items: center; gap: 8px;
+  }
+  .chart-wrap { position: relative; height: 180px; }
+  .accuracy-list { display: flex; flex-direction: column; gap: 10px; }
+  .accuracy-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .accuracy-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .accuracy-pct { font-size: 13px; font-weight: 700; color: var(--sage-dark); }
+  .accuracy-bar-bg { height: 7px; background: #eee; border-radius: 10px; overflow: hidden; }
+  .accuracy-bar-fg {
+    height: 100%; border-radius: 10px;
+    background: linear-gradient(90deg, var(--sage), var(--lavender)); transition: width 1s ease;
+  }
+
+  /* MODALS */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(6px); z-index: 1000;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: white; border-radius: 24px; padding: 24px;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    transform: translateY(20px) scale(0.97); transition: transform 0.3s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+  .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+  .modal p { font-size: 13px; color: var(--text-light); margin-bottom: 16px; line-height: 1.5; }
+  .modal-textarea {
+    width: 100%; height: 120px; padding: 12px;
+    border: 2px solid #eee; border-radius: 12px; font-size: 12px;
+    font-family: monospace; resize: none; outline: none;
+    background: var(--bg); color: var(--text); word-break: break-all; transition: border-color 0.2s;
+  }
+  .modal-textarea:focus { border-color: var(--lavender); }
+  .modal-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .modal-btn {
+    flex: 1; padding: 12px; border: none; border-radius: 12px;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; font-family: inherit;
+  }
+  .modal-btn.primary { background: linear-gradient(135deg, var(--sage), var(--lavender)); color: white; }
+  .modal-btn.secondary { background: var(--bg); color: var(--text); }
+  .modal-btn:hover { opacity: 0.85; }
+  .edit-input-wrap { margin-bottom: 12px; }
+  .edit-input-wrap label {
+    font-size: 12px; font-weight: 700; color: var(--text-light);
+    text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;
+  }
+  .edit-input {
+    width: 100%; padding: 11px 14px; border: 2px solid #eee;
+    border-radius: 12px; font-size: 14px; font-family: inherit;
+    outline: none; background: var(--bg); transition: border-color 0.2s;
+  }
+  .edit-input:focus { border-color: var(--sage); }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: white;
+    padding: 12px 22px; border-radius: 50px;
+    font-size: 14px; font-weight: 600; z-index: 5000;
+    opacity: 0; transition: all 0.3s; white-space: nowrap; pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (min-width: 481px) {
+    body { background: linear-gradient(135deg, #e8e4f0 0%, #e4f0e8 100%); }
+    #app { margin-top: 20px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+  }
+</style>
 </head>
 <body>
 
-    <audio id="loveSong" loop><source src="Real_love.mp3" type="audio/mpeg"></audio>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">🌿</div>
+  <div>
+    <div class="splash-title">Daily Task Master</div>
+    <div class="splash-subtitle">2026 Edition</div>
+  </div>
+  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+</div>
 
-    <div id="capture-node">
-        <div class="logo-text">Love Calc</div>
-        <p style="font-size: 10px; font-weight: bold; margin-bottom: 15px;">ADVANCED EDITION | BY PRITAM MISTRY</p>
+<!-- APP -->
+<div id="app">
 
-        <div id="calc-section">
-            <input type="text" id="name1" placeholder="Your Name">
-            <div style="display: flex; gap: 5px;">
-                <input type="number" id="year1" placeholder="Birth Year">
-                <select id="month1"><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option></select>
-            </div>
-            <input type="text" id="name2" placeholder="Crush Name">
-            <div style="display: flex; gap: 5px;">
-                <input type="number" id="year2" placeholder="Birth Year">
-                <select id="month2"><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option></select>
-            </div>
-            <button class="btn-main" onclick="startAnalysis()">Analyse Love ❤️</button>
-            <p onclick="toggleMode('quiz')" style="color: #d63384; cursor: pointer; font-weight: bold; text-decoration: underline; font-size: 13px; margin-top: 15px;">Switch to Love Questions 📝</p>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="header-logo">🌿</div>
+        <div>
+          <div class="header-title">Daily Task Master</div>
+          <div class="header-date" id="headerDate"></div>
         </div>
-
-        <div id="quiz-section" style="display:none;">
-            <h4 id="q-text" style="margin-bottom: 15px; font-size: 15px; min-height: 45px;"></h4>
-            <div id="options-area"></div>
-            <p id="q-progress" style="font-size: 11px; margin-top: 10px; color: #555;"></p>
-        </div>
-
-        <div id="result-box" style="display:none;">
-            <h3 id="display-names" style="font-size: 18px; margin-bottom: 5px; color: #ff4d6d;"></h3>
-            <div class="meter-container"><div id="meter-fill"></div></div>
-            <h2 id="score-val" style="color:#ff4d6d; font-size: 45px;">0%</h2>
-            <p id="final-msg" style="font-weight: 600; padding: 5px; font-size: 14px;"></p>
-            <div id="tips-area" class="tips-box"></div>
-            
-            <div id="action-btns" style="margin-top: 15px;">
-                <button class="btn-main" onclick="saveToGallery()" style="background: #333; margin-bottom: 10px;">Save To Gallery 📸</button>
-                <button class="btn-main" onclick="location.reload()" style="background: transparent; border: 1px solid #ff4d6d; color: #ff4d6d;">Retry 🔄</button>
-            </div>
-        </div>
-
-        <div class="contact-us" id="contact-sec">
-            <p style="font-size: 11px; margin-bottom: 10px; font-weight: bold;">Created By Pritam</p>
-            <div class="social-links">
-                <a href="https://www.facebook.com/share/1KbDpquDoS/" target="_blank">Facebook</a>
-                <a href="https://www.instagram.com/pritamxii?igsh=MW1ja2N4MXhxMTdiYg==" target="_blank">Instagram</a>
-            </div>
-        </div>
-        <footer id="footer-sec" style="margin-top: 15px; font-size: 9px; opacity: 0.7;">© 2026 PRITAM MISTRY</footer>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="openBackupModal()" title="Backup">💾</button>
+        <button class="icon-btn" onclick="openRestoreModal()" title="Restore">📥</button>
+      </div>
     </div>
+  </div>
 
-    <div id="rating-modal">
-        <div class="modal-content">
-            <h3>Rate Your Experience</h3>
-            <div class="stars" id="star-container">
-                <span onclick="setRating(1)">★</span><span onclick="setRating(2)">★</span><span onclick="setRating(3)">★</span><span onclick="setRating(4)">★</span><span onclick="setRating(5)">★</span>
-            </div>
-            <p id="rating-msg" style="font-size: 13px; font-weight: bold; color: #ff4d6d; min-height: 40px;"></p>
-            <button class="btn-main" onclick="closeRating()" style="padding: 10px; font-size: 12px;">Close</button>
-        </div>
+  <!-- MONTH NAV -->
+  <div class="month-nav">
+    <button class="month-nav-btn" id="prevMonthBtn" onclick="changeMonth(-1)">‹</button>
+    <div class="month-label-wrap">
+      <div class="month-label" id="monthLabel"></div>
+      <div class="month-label-sub" id="monthLabelSub"></div>
+      <button class="today-jump-btn" onclick="jumpToToday()" id="todayJumpBtn">Jump to Today</button>
     </div>
+    <button class="month-nav-btn" id="nextMonthBtn" onclick="changeMonth(1)">›</button>
+  </div>
 
-    <script>
-        const audio = document.getElementById('loveSong');
-        let quizScore = 0; let qIndex = 0; let selectedQuestions = [];
+  <!-- CALENDAR -->
+  <div class="calendar-wrap">
+    <div class="calendar-scroll" id="calendarScroll"></div>
+  </div>
 
-        // এখানে ১৪০টি প্রশ্নই আছে (সংক্ষিপ্ত উদাহরণ দেওয়া হলো, আপনি আপনার সব প্রশ্ন এখানে রাখুন)
-        const questionBank = [
-            { q: "তুমি কাউকে পছন্দ করলে প্রথমে কী করো?", a: ["কথা বলার চেষ্টা করি", "চুপচাপ তাকাই", "সোশ্যাল মিডিয়ায় স্টক করি", "এড়িয়ে যাই"] },
-            { q: "তোমার কাছে “ক্রাশ” মানে কী?", a: ["সাময়িক ভালো লাগা", "গভীর অনুভূতি", "শুধু আকর্ষণ", "কনফিউশন"] },
-            { q: "কেউ তোমাকে পছন্দ করলে তুমি কীভাবে বুঝো?", a: ["ওর আচরণ দেখে", "বন্ধুরা বলে", "মেসেজিং দেখে", "বুঝতেই পারি না"] },
-            { q: "প্রথম মেসেজ কে দেবে বলে মনে করো?", a: ["আমি", "ও", "যার ইচ্ছে", "কেউ না"] },
-            { q: "প্রথম ডেট কোথায় পছন্দ?", a: ["ক্যাফে", "পার্ক", "সিনেমা", "অনলাইন কল"] },
-            { q: "তুমি বেশি কিসে আকর্ষিত হও?", a: ["লুক", "পার্সোনালিটি", "হিউমার", "কেয়ার"] },
-            { q: "ভালোবাসা শুরু হয় কীভাবে?", a: ["বন্ধুত্ব দিয়ে", "আকর্ষণ দিয়ে", "সময়ের সাথে", "হঠাৎ"] },
-            { q: "প্রথম ইমপ্রেশন কতটা গুরুত্বপূর্ণ?", a: ["খুবই", "মাঝারি", "কম", "কোনো গুরুত্ব নেই"] },
-            { q: "তুমি কি “লাভ অ্যাট ফার্স্ট সাইট” বিশ্বাস করো?", a: ["হ্যাঁ", "না", "কখনো কখনো", "জানি না"] },
-            { q: "তোমার কাছে আইডিয়াল পার্টনার কেমন?", a: ["কেয়ারিং", "ফানি", "ম্যাচিউর", "সবগুলো"] },
-            { q: "“সিচুয়েশনশিপ” মানে কী মনে করো?", a: ["নামহীন সম্পর্ক", "বন্ধুত্ব", "প্রেম", "কনফিউশন"] },
-            { q: "তুমি কি সিচুয়েশনশিপে কমফর্টেবল?", a: ["হ্যাঁ", "না", "পরিস্থিতির উপর", "জানি না"] },
-            { q: "ক্লিয়ারিটি কতটা জরুরি?", a: ["খুব", "মাঝারি", "কম", "জরুরি না"] },
-            { q: "“লেবেল” দরকার?", a: ["হ্যাঁ", "না", "পরে", "পরিস্থিতি অনুযায়ী"] },
-            { q: "তুমি কি একসাথে একাধিক জনের সাথে কথা বলো?", a: ["হ্যাঁ", "না", "কখনো", "জানি না"] },
-            { q: "কেউ যদি কনফিউজ করে রাখে?", a: ["ছেড়ে দিই", "কথা বলি", "অপেক্ষা করি", "ইগনোর করি"] },
-            { q: "“ঘোস্টিং” সম্পর্কে মত?", a: ["খারাপ", "ঠিক আছে", "পরিস্থিতি অনুযায়ী", "করি"] },
-            { q: "তুমি কি কখনো কাউকে ঘোস্ট করেছো?", a: ["হ্যাঁ", "না", "একবার", "মনে নেই"] },
-            { q: "সিচুয়েশনশিপে সবচেয়ে বড় সমস্যা কী?", a: ["অনিশ্চয়তা", "ইমোশন", "কমিউনিকেশন", "ট্রাস্ট"] },
-            { q: "তুমি কি ক্লোজার চাই?", a: ["হ্যাঁ", "না", "কখনো", "দরকার নেই"] },
-            { q: "ভালোবাসা প্রকাশ করো কীভাবে?", a: ["কথা দিয়ে", "কাজ দিয়ে", "গিফট দিয়ে", "সময় দিয়ে"] },
-            { q: "কেয়ার দেখানো কীভাবে?", a: ["খোঁজ নেওয়া", "সাহায্য করা", "সময় দেওয়া", "সব"] },
-            { q: "“আই লাভ ইউ” কতবার বলা উচিত?", a: ["প্রতিদিন", "মাঝে মাঝে", "কম", "দরকার নেই"] },
-            { q: "তোমার লাভ ল্যাঙ্গুয়েজ কী?", a: ["ওয়ার্ডস", "অ্যাকশন", "টাইম", "গিফট"] },
-            { q: "তুমি কি সহজে কেয়ার করো?", a: ["হ্যাঁ", "না", "নির্ভর করে", "জানি না"] },
-            { q: "তোমার কাছে কেয়ার মানে?", a: ["খেয়াল রাখা", "পাশে থাকা", "বুঝতে পারা", "সব"] },
-            { q: "তুমি কি ওভারকেয়ারিং?", a: ["হ্যাঁ", "না", "কখনো", "জানি না"] },
-            { q: "তোমার কাছে ভালোবাসা = ?", a: ["ট্রাস্ট", "রেসপেক্ট", "কেয়ার", "সব"] },
-            { q: "তুমি কি স্যাক্রিফাইস করতে পারো?", a: ["হ্যাঁ", "না", "সীমিত", "জানি না"] },
-            { q: "তোমার কাছে “এফোর্ট” কতটা গুরুত্বপূর্ণ?", a: ["খুব", "মাঝারি", "কম", "জরুরি না"] },
-            { q: "তুমি কি সহজে ট্রাস্ট করো?", a: ["হ্যাঁ", "না", "সময় লাগে", "নির্ভর করে"] },
-            { q: "জেলাসি কি নরমাল?", a: ["হ্যাঁ", "না", "একটু", "বেশি"] },
-            { q: "পার্টনার অন্য কারো সাথে কথা বললে?", a: ["ঠিক আছে", "সন্দেহ", "জেলাসি", "কথা বলি"] },
-            { q: "তুমি কি পজেসিভ?", a: ["হ্যাঁ", "না", "একটু", "জানি না"] },
-            { q: "ট্রাস্ট ব্রেক হলে?", a: ["শেষ", "ঠিক করি", "সময় দিই", "কনফিউজ"] },
-            { q: "তুমি কি ওভারথিংক করো?", a: ["হ্যাঁ", "না", "কখনো", "সবসময়"] },
-            { q: "ফাইট হলে কী করো?", a: ["কথা বলি", "চুপ থাকি", "রাগ করি", "এড়িয়ে যাই"] },
-            { q: "কে আগে সরি বলবে?", a: ["আমি", "ও", "যার ভুল", "কেউ না"] },
-            { q: "তুমি কি ইমোশনাল?", a: ["হ্যাঁ", "না", "মাঝামাঝি", "জানি না"] },
-            { q: "তুমি কি সহজে কাঁদো?", a: ["হ্যাঁ", "না", "কখনো", "লুকাই"] },
-            { q: "লং ডিস্ট্যান্স রিলেশন?", a: ["সম্ভব", "কঠিন", "না", "নির্ভর করে"] },
-            { q: "ডেইলি কথা বলা জরুরি?", a: ["হ্যাঁ", "না", "মাঝেমাঝে", "মুড অনুযায়ী"] },
-            { q: "স্পেস কতটা দরকার?", a: ["বেশি", "মাঝারি", "কম", "দরকার নেই"] },
-            { q: "সোশ্যাল মিডিয়া পোস্ট?", a: ["চাই", "না", "মাঝে মাঝে", "দরকার নেই"] },
-            { q: "পাসওয়ার্ড শেয়ার করা উচিত?", a: ["হ্যাঁ", "না", "ট্রাস্টে", "দরকার নেই"] },
-            { q: "বন্ধুদের সাথে সময় vs পার্টনার?", a: ["পার্টনার", "বন্ধু", "ব্যালান্স", "মুড"] },
-            { q: "তুমি কি প্ল্যানিং করো?", a: ["হ্যাঁ", "না", "কখনো", "ও করে"] },
-            { q: "সারপ্রাইজ পছন্দ?", a: ["হ্যাঁ", "না", "কখনো", "ছোট হলে"] },
-            { q: "তুমি কি ডমিনেন্ট না সাবমিসিভ?", a: ["ডমিনেন্ট", "সাবমিসিভ", "মিক্স", "জানি না"] },
-            { q: "রিলেশনশিপে সবচেয়ে জরুরি কী?", a: ["ট্রাস্ট", "কেয়ার", "কমিউনিকেশন", "সব"] },
-            { q: "ব্রেকআপের পর কী করো?", a: ["মুভ অন", "কাঁদি", "বন্ধুর সাথে থাকি", "একা থাকি"] },
-            { q: "এক্সের সাথে বন্ধু থাকা যায়?", a: ["হ্যাঁ", "না", "কখনো", "কঠিন"] },
-            { q: "তুমি কি দ্রুত মুভ অন করো?", a: ["হ্যাঁ", "না", "সময় লাগে", "নির্ভর করে"] },
-            { q: "ভালোবাসা একবারই হয়?", a: ["হ্যাঁ", "না", "জানি না", "অনেকবার"] },
-            { q: "তুমি কি সেকেন্ড চান্স দাও?", a: ["হ্যাঁ", "না", "পরিস্থিতি অনুযায়ী", "একবার"] },
-            { q: "রেড ফ্ল্যাগ দেখলে?", a: ["এড়িয়ে যাই", "কথা বলি", "ইগনোর করি", "থাকি"] },
-            { q: "গ্রীন ফ্ল্যাগ কী?", a: ["কেয়ার", "ট্রাস্ট", "রেসপেক্ট", "সব"] },
-            { q: "তুমি কি সিরিয়াস রিলেশন চাও?", a: ["হ্যাঁ", "না", "এখন না", "জানি না"] },
-            { q: "ভালোবাসা না ক্যারিয়ার আগে?", a: ["ভালোবাসা", "ক্যারিয়ার", "ব্যালান্স", "পরিস্থিতি"] },
-            { q: "তুমি কি নিজের জন্য ভালোবাসো?", a: ["হ্যাঁ", "না", "শিখছি", "জানি না"] },
-            { q: "তুমি কি সহজে প্রেমে পড়ে যাও?", a: ["হ্যাঁ", "না", "কখনো কখনো", "সময় লাগে"] },
-            { q: "কারো জন্য অপেক্ষা করতে পারো?", a: ["হ্যাঁ", "না", "নির্ভর করে", "কিছুদিন"] },
-            { q: "“সোলমেট” বিশ্বাস করো?", a: ["হ্যাঁ", "না", "হয়তো", "জানি না"] },
-            { q: "তুমি কি নিজের ফিলিংস লুকাও?", a: ["হ্যাঁ", "না", "কখনো", "বেশিরভাগ সময়"] },
-            { q: "ভালোবাসা বেশি কষ্ট দেয় না সুখ?", a: ["সুখ", "কষ্ট", "দুটোই", "জানি না"] },
-            { q: "তুমি কি গভীর কথা বলতে পছন্দ করো?", a: ["হ্যাঁ", "না", "মুড অনুযায়ী", "মাঝে মাঝে"] },
-            { q: "“মিস করা” কীভাবে বোঝাও?", a: ["মেসেজ করি", "কল করি", "চুপ থাকি", "স্ট্যাটাস দিই"] },
-            { q: "তুমি কি কাউকে খুব মিস করো?", a: ["হ্যাঁ", "না", "মাঝে মাঝে", "বলতে চাই না"] },
-            { q: "ভালোবাসা কি সময়ের সাথে কমে?", a: ["হ্যাঁ", "না", "নির্ভর করে", "বাড়ে"] },
-            { q: "তুমি কি লয়্যাল?", a: ["হ্যাঁ", "না", "চেষ্টা করি", "নির্ভর করে"] },
-            { q: "তুমি কি আগে মেসেজ দাও?", a: ["হ্যাঁ", "না", "মুড অনুযায়ী", "অপেক্ষা করি"] },
-            { q: "“লাস্ট সিন” দেখে রাগ হয়?", a: ["হ্যাঁ", "না", "কখনো", "বেশি"] },
-            { q: "রিপ্লাই দেরি হলে?", a: ["বুঝি", "রাগ করি", "ওভারথিংক", "ইগনোর"] },
-            { q: "কল না টেক্সট—কোনটা পছন্দ?", a: ["কল", "টেক্সট", "দুটোই", "মুড"] },
-            { q: "তুমি কি লম্বা কথা বলতে পারো?", a: ["হ্যাঁ", "না", "মাঝে মাঝে", "কার উপর নির্ভর"] },
-            { q: "“ড্রাই টেক্সট” পেলে?", a: ["ইগনোর", "প্রশ্ন করি", "রাগ করি", "একই করি"] },
-            { q: "honest হওয়া কতটা জরুরি?", a: ["খুব", "মাঝারি", "কম", "দরকার নেই"] },
-            { q: "তুমি কি সব কথা শেয়ার করো?", a: ["হ্যাঁ", "না", "কিছু", "নির্ভর করে"] },
-            { q: "“Seen zone” করলে কী ভাবো?", a: ["ব্যস্ত", "ইগনোর", "রাগ", "কিছু না"] },
-            { q: "কথা না হলে কি দূরত্ব বাড়ে?", a: ["হ্যাঁ", "না", "কখনো", "নির্ভর করে"] },
-            { q: "তুমি কি সহজে অ্যাটাচড হয়ে যাও?", a: ["হ্যাঁ", "না", "সময় লাগে", "নির্ভর করে"] },
-            { q: "কারো সাথে অভ্যাস হয়ে গেলে?", a: ["ছাড়তে পারি না", "চেষ্টা করি", "কষ্ট হয়", "ইগনোর"] },
-            { q: "তুমি কি “good morning/night” আশা করো?", a: ["হ্যাঁ", "না", "মাঝে মাঝে", "দরকার নেই"] },
-            { q: "ডেইলি আপডেট দরকার?", a: ["হ্যাঁ", "না", "কিছুটা", "মুড"] },
-            { q: "তুমি কি clingy?", a: ["হ্যাঁ", "না", "একটু", "জানি না"] },
-            { q: "তুমি কি সহজে দূরে সরে যাও?", a: ["হ্যাঁ", "না", "কষ্টে", "নির্ভর করে"] },
-            { q: "তুমি কি over-attach হও?", a: ["হ্যাঁ", "না", "কখনো", "জানি না"] },
-            { q: "কারো অভ্যাস ভাঙা কতটা কঠিন?", a: ["খুব", "মাঝারি", "কম", "সহজ"] },
-            { q: "তুমি কি attention চাও?", a: ["হ্যাঁ", "না", "একটু", "মুড"] },
-            { q: "ignored হলে কী করো?", a: ["দূরে যাই", "প্রশ্ন করি", "রাগ করি", "চুপ থাকি"] },
-            { q: "future imagine করো কারো সাথে?", a: ["হ্যাঁ", "না", "কখনো", "ভয় লাগে"] },
-            { q: "বিয়ে নিয়ে ভাবো?", a: ["হ্যাঁ", "না", "পরে", "জানি না"] },
-            { q: "city change করবে?", a: ["হ্যাঁ", "না", "নির্ভর করে", "কঠিন"] },
-            { q: "family approval কতটা জরুরি?", a: ["খুব", "মাঝারি", "কম", "দরকার নেই"] },
-            { q: "long-term না short-term?", a: ["long-term", "short-term", "দেখি", "জানি না"] },
-            { q: "realistic না dreamy?", a: ["realistic", "dreamy", "mix", "জানি না"] },
-            { q: "heartbreak এর ভয় আছে?", a: ["হ্যাঁ", "না", "একটু", "লুকাই"] },
-            { q: "আবার ভালোবাসতে পারবে?", a: ["হ্যাঁ", "না", "সময় লাগবে", "জানি না"] },
-            { q: "“right person wrong time” বিশ্বাস করো?", a: ["হ্যাঁ", "না", "কখনো", "জানি না"] },
-            { q: "শেষ প্রশ্ন — ভালোবাসা তোমার কাছে কী?", a: ["শান্তি", "অনুভূতি", "দায়িত্ব", "সবকিছু 💖"] }
-        ];
+  <!-- SCORE CARD -->
+  <div class="score-card">
+    <div class="score-ring">
+      <svg viewBox="0 0 80 80">
+        <circle class="ring-bg" cx="40" cy="40" r="35"/>
+        <circle class="ring-fg" id="ringFg" cx="40" cy="40" r="35"/>
+      </svg>
+      <div class="score-text" id="scoreText">0%</div>
+    </div>
+    <div class="score-info">
+      <div class="score-label">Weighted Score</div>
+      <div class="score-pts" id="scorePts">0 <span>pts earned</span></div>
+      <div class="score-label" id="scoreDenom" style="margin-top:2px;"></div>
+    </div>
+  </div>
 
-        const tipsBank = [
-            "ভালোবাসার আগে নিজেকে ভালোবাসতে শিখো।", "সবসময় নিজের সম্মান (self-respect) ধরে রাখো।", "কাউকে বদলানোর চেষ্টা না করে accept করো।", "toxic behaviour চিনতে শিখো।", "সন্দেহ বেশি হলে সম্পর্ক ভেঙে যায়।", "ভুল থেকে শিখো, বারবার repeat কোরো না।", "commitment-এর আগে মানুষটাকে বুঝো।", "যে তোমাকে শান্তি দেয়, তাকেই বেছে নাও।"
-        ];
+  <!-- MONTH SUMMARY -->
+  <div class="month-summary">
+    <div class="summary-item">
+      <div class="summary-val" id="sumAvg">—</div>
+      <div class="summary-lbl">Avg Score</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-val" id="sumDays">0</div>
+      <div class="summary-lbl">Active Days</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-val" id="sumBest">—</div>
+      <div class="summary-lbl">Best Day</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-val" id="sumTasks">0</div>
+      <div class="summary-lbl">Tasks Done</div>
+    </div>
+  </div>
 
-        const ratingsData = {
-            1: ["একদমই সন্তুষ্ট না।", "পুরো অভিজ্ঞতা খারাপ ছিল।"],
-            2: ["expectation meet করতে পারেনি।", "উন্নতি দরকার।"],
-            3: ["মোটামুটি ভালো।", "ঠিকঠাক ছিল।"],
-            4: ["বেশ ভালো লেগেছে।", "সন্তুষ্ট।"],
-            5: ["একদম perfect!", "অসাধারণ অনুভূতি ❤️"]
-        };
+  <!-- ACHIEVEMENT -->
+  <div class="achievement-box">
+    <div class="medal" id="medalIcon">🎯</div>
+    <div class="achieve-info">
+      <div class="achieve-title" id="achieveTitle">Keep Going!</div>
+      <div class="achieve-sub" id="achieveSub">Complete tasks to earn medals</div>
+    </div>
+    <div class="monthly-rank" id="monthlyRank">—</div>
+  </div>
 
-        function toggleMode(mode) {
-            document.getElementById('calc-section').style.display = mode === 'calc' ? 'block' : 'none';
-            document.getElementById('quiz-section').style.display = mode === 'quiz' ? 'block' : 'none';
-            if(mode === 'quiz') startQuiz();
-        }
+  <!-- ADD TASK -->
+  <div class="add-section">
+    <h3>✏️ Add Task</h3>
+    <div class="add-row">
+      <input type="text" class="add-input" id="taskInput" placeholder="Task name..." maxlength="60"/>
+      <input type="number" class="pts-input" id="ptsInput" placeholder="Pts" min="0" max="10" value="5"/>
+    </div>
+    <button class="add-btn" onclick="addTask()">＋ Add Task</button>
+  </div>
 
-        function startQuiz() {
-            // SHUFFLE: Randomly picks exactly 15 questions
-            selectedQuestions = [...questionBank].sort(() => Math.random() - 0.5).slice(0, 15);
-            qIndex = 0; quizScore = 0;
-            showQuestion();
-        }
+  <!-- TASK LIST -->
+  <div class="task-section">
+    <div class="task-section-header">
+      <div class="task-section-title">📋 Tasks</div>
+      <div class="task-count" id="taskCount">0 tasks</div>
+    </div>
+    <div class="task-list" id="taskList"></div>
+  </div>
 
-        function showQuestion() {
-            // এটি চেক করবে যদি ১৫টি প্রশ্ন শেষ হয়
-            if(qIndex >= 15) { 
-                let calculatedScore = Math.floor(Math.random() * 41 + 59);
-                showResult(calculatedScore, "Quiz Result"); 
-                return; 
-            }
-            const q = selectedQuestions[qIndex];
-            document.getElementById('q-text').innerText = q.q;
-            document.getElementById('q-progress').innerText = `Question ${qIndex + 1} of 15`;
-            const area = document.getElementById('options-area'); area.innerHTML = '';
-            q.a.forEach((opt, i) => {
-                const btn = document.createElement('button'); btn.className = 'option-btn'; btn.innerText = opt;
-                btn.onclick = () => { quizScore += (5 - i); qIndex++; showQuestion(); };
-                area.appendChild(btn);
-            });
-        }
+  <!-- JOURNAL -->
+  <div class="journal-section">
+    <h3>📓 Daily Journal</h3>
+    <textarea class="journal-textarea" id="journalArea" placeholder="Write your thoughts, notes, reflections for this day..."></textarea>
+    <button class="save-journal-btn" onclick="saveJournal()">💾 Save Note</button>
+  </div>
 
-        function startAnalysis() {
-            const n1 = document.getElementById('name1').value;
-            const n2 = document.getElementById('name2').value;
-            if(!n1 || !n2) return alert("দয়া করে নাম পূরণ করুন!");
-            document.getElementById('display-names').innerText = n1 + " ❤️ " + n2;
-            audio.play().catch(()=>{});
-            showResult(Math.floor(Math.random() * 41 + 59), "Calculation Result");
-        }
+  <!-- HISTORY TOGGLE -->
+  <button class="history-toggle-btn" onclick="toggleHistory()" id="historyToggleBtn">
+    <span>📊</span> <span>Performance History</span> <span id="historyArrow">▼</span>
+  </button>
 
-        function showResult(score, type) {
-            document.getElementById('calc-section').style.display = 'none';
-            document.getElementById('quiz-section').style.display = 'none';
-            document.getElementById('result-box').style.display = 'block';
-            document.getElementById('tips-area').innerText = tipsBank[Math.floor(Math.random() * tipsBank.length)];
+  <!-- HISTORY -->
+  <div id="historySection">
+    <div class="history-card">
+      <h3>📈 Monthly Performance — <span id="chartMonthLabel"></span></h3>
+      <div class="chart-wrap"><canvas id="monthChart"></canvas></div>
+    </div>
+    <div class="history-card">
+      <h3>🎯 Task Accuracy — <span id="accuracyMonthLabel"></span></h3>
+      <div class="accuracy-list" id="accuracyList"></div>
+    </div>
+  </div>
 
-            let cur = 0;
-            const t = setInterval(() => {
-                if(cur >= score) { 
-                    clearInterval(t); 
-                    document.getElementById('final-msg').innerText = score > 85 ? "Soulmate Alert! ❤️" : "Great Bond! ✨";
-                    if(score > 85) confetti();
-                    setTimeout(() => { document.getElementById('rating-modal').style.display = 'flex'; }, 5000);
-                } else {
-                    cur++;
-                    document.getElementById('score-val').innerText = cur + "%";
-                    document.getElementById('meter-fill').style.transform = `translateX(-50%) rotate(${cur * 1.8}deg)`;
-                }
-            }, 30);
-        }
+</div>
 
-        function saveToGallery() {
-            const node = document.getElementById('capture-node');
-            const actionBtns = document.getElementById('action-btns');
-            actionBtns.style.display = 'none'; 
-            
-            html2canvas(node, { scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'Love_Result_Pritam.png';
-                link.href = canvas.toDataURL();
-                link.click();
-                actionBtns.style.display = 'block';
-            });
-        }
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3>✏️ Edit Task</h3>
+    <p>Update the task name or its point value.</p>
+    <div class="edit-input-wrap">
+      <label>Task Name</label>
+      <input type="text" class="edit-input" id="editTaskName" maxlength="60"/>
+    </div>
+    <div class="edit-input-wrap">
+      <label>Points (0–10)</label>
+      <input type="number" class="edit-input" id="editTaskPts" min="0" max="10"/>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('editModal')">Cancel</button>
+      <button class="modal-btn primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
 
-        function setRating(n) {
-            const stars = document.getElementById('star-container').children;
-            for(let i=0; i<5; i++) stars[i].classList.toggle('active', i < n);
-            const msgs = ratingsData[n];
-            document.getElementById('rating-msg').innerText = msgs[Math.floor(Math.random() * msgs.length)];
-            if(n === 5) confetti();
-        }
+<!-- BACKUP MODAL -->
+<div class="modal-overlay" id="backupModal">
+  <div class="modal">
+    <h3>💾 Backup Data</h3>
+    <p>Copy this code and save it somewhere safe. Use it to restore your data anytime.</p>
+    <textarea class="modal-textarea" id="backupCode" readonly></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('backupModal')">Close</button>
+      <button class="modal-btn primary" onclick="copyBackup()">📋 Copy Code</button>
+    </div>
+  </div>
+</div>
 
-        function closeRating() { document.getElementById('rating-modal').style.display = 'none'; }
-    </script>
+<!-- RESTORE MODAL -->
+<div class="modal-overlay" id="restoreModal">
+  <div class="modal">
+    <h3>📥 Restore Data</h3>
+    <p>Paste your backup code below. This will <strong>replace</strong> all current data.</p>
+    <textarea class="modal-textarea" id="restoreCode" placeholder="Paste your backup code here..."></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('restoreModal')">Cancel</button>
+      <button class="modal-btn primary" onclick="restoreData()">🔄 Restore</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ===== CONSTANTS =====
+const STORAGE_KEY = 'HabitPro_Daily_Mode';
+const NOTES_KEY   = 'HabitPro_Notes_Daily';
+const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+const SHORT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun',
+                      'Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ===== STATE =====
+const realToday  = new Date();
+let viewYear     = realToday.getFullYear();
+let viewMonth    = realToday.getMonth();      // 0-based
+let selectedDate = new Date(realToday);
+let editingIndex = -1;
+let monthChart   = null;
+let historyOpen  = false;
+
+// ===== DATA HELPERS =====
+function getKey(date) {
+  return `${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}`;
+}
+function loadData()  { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } }
+function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+function loadNotes() { try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || {}; }  catch { return {}; } }
+function saveNotes(n){ localStorage.setItem(NOTES_KEY, JSON.stringify(n)); }
+function getTasks(date)        { return loadData()[getKey(date)] || []; }
+function setTasks(date, tasks) { const d = loadData(); d[getKey(date)] = tasks; saveData(d); }
+
+// ===== TIME =====
+function getTimeStr() {
+  const n = new Date(); let h = n.getHours(), m = n.getMinutes();
+  const ap = h >= 12 ? 'pm' : 'am'; h = h%12||12; m = m<10?'0'+m:m;
+  return `at ${h}:${m} ${ap}`;
+}
+
+// ===== MONTH NAVIGATION =====
+function changeMonth(dir) {
+  viewMonth += dir;
+  if (viewMonth > 11) { viewMonth = 0;  viewYear++; }
+  if (viewMonth < 0)  { viewMonth = 11; viewYear--; }
+
+  // If selected date is not in new month, move to day 1 of new month
+  if (selectedDate.getMonth() !== viewMonth || selectedDate.getFullYear() !== viewYear) {
+    const daysInNew = new Date(viewYear, viewMonth+1, 0).getDate();
+    const newDay = Math.min(selectedDate.getDate(), daysInNew);
+    selectedDate = new Date(viewYear, viewMonth, newDay);
+  }
+
+  updateMonthNav();
+  buildCalendar();
+  renderAll();
+}
+
+function jumpToToday() {
+  viewYear  = realToday.getFullYear();
+  viewMonth = realToday.getMonth();
+  selectedDate = new Date(realToday);
+  updateMonthNav();
+  buildCalendar();
+  renderAll();
+  showToast('📅 Jumped to today!');
+}
+
+function updateMonthNav() {
+  document.getElementById('monthLabel').textContent    = `${MONTHS[viewMonth]} ${viewYear}`;
+  const isCurrentMonth = viewMonth === realToday.getMonth() && viewYear === realToday.getFullYear();
+  document.getElementById('monthLabelSub').textContent = isCurrentMonth ? '📍 Current Month' : '📂 Past / Future Month';
+  document.getElementById('todayJumpBtn').style.display = isCurrentMonth ? 'none' : 'inline-block';
+  // No hard limit on navigation
+  document.getElementById('prevMonthBtn').disabled = false;
+  document.getElementById('nextMonthBtn').disabled = false;
+}
+
+// ===== CALENDAR =====
+function buildCalendar() {
+  const scroll = document.getElementById('calendarScroll');
+  scroll.innerHTML = '';
+  const data = loadData();
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(viewYear, viewMonth, d);
+    const key  = getKey(date);
+    const isToday    = date.toDateString() === realToday.toDateString();
+    const isSelected = date.toDateString() === selectedDate.toDateString();
+    const hasTasks   = data[key] && data[key].length > 0;
+
+    const pill = document.createElement('div');
+    pill.className = 'day-pill' +
+      (isToday    ? ' today'    : '') +
+      (isSelected ? ' active'   : '') +
+      (hasTasks   ? ' has-tasks': '');
+
+    if (isToday) {
+      const tag = document.createElement('span');
+      tag.className = 'today-tag'; tag.textContent = 'TODAY';
+      pill.appendChild(tag);
+    }
+
+    pill.innerHTML += `<div class="day-name">${DAYS[date.getDay()]}</div><div class="day-num">${d}</div>`;
+
+    pill.addEventListener('click', () => {
+      selectedDate = date;
+      buildCalendar();
+      renderAll();
+    });
+
+    scroll.appendChild(pill);
+    if (isSelected) {
+      setTimeout(() => pill.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' }), 80);
+    }
+  }
+}
+
+// ===== SCORE =====
+function calcScore(tasks) {
+  const total  = tasks.reduce((s,t) => s+(t.pts||0), 0);
+  const earned = tasks.filter(t=>t.done).reduce((s,t) => s+(t.pts||0), 0);
+  const pct    = total===0 ? 0 : Math.round((earned/total)*100);
+  return { total, earned, pct };
+}
+
+function updateScoreUI(tasks) {
+  const { total, earned, pct } = calcScore(tasks);
+  const C = 2*Math.PI*35;
+  const offset = C - (pct/100)*C;
+
+  document.getElementById('scoreText').textContent = pct+'%';
+  document.getElementById('scorePts').innerHTML    = `${earned} <span>pts earned</span>`;
+  document.getElementById('scoreDenom').textContent= `out of ${total} total pts`;
+
+  const ring = document.getElementById('ringFg');
+  ring.style.strokeDasharray  = C;
+  ring.style.strokeDashoffset = offset;
+  ring.style.stroke = pct>=90?'#f39c12':pct>=80?'#95a5a6':pct>=60?'#cd6133':'var(--sage)';
+
+  let medal='🎯', title='Keep Going!', sub='Complete tasks to earn medals';
+  if      (pct>=90) { medal='🥇'; title='Gold Medal!';   sub=`Excellent! ${pct}% weighted score`; }
+  else if (pct>=80) { medal='🥈'; title='Silver Medal!'; sub=`Great work! ${pct}% weighted score`; }
+  else if (pct>=60) { medal='🥉'; title='Copper Medal!'; sub=`Good effort! ${pct}% weighted score`; }
+  else if (earned>0){ title='Making Progress!'; sub=`${pct}% weighted score so far`; }
+
+  document.getElementById('medalIcon').textContent  = medal;
+  document.getElementById('achieveTitle').textContent = title;
+  document.getElementById('achieveSub').textContent   = sub;
+  document.getElementById('monthlyRank').textContent  = calcMonthlyRank();
+}
+
+function calcMonthlyRank() {
+  const data = loadData();
+  let total=0, count=0;
+  for (const key in data) {
+    const [y,m] = key.split('_').map(Number);
+    if (y===viewYear && m===(viewMonth+1)) {
+      const tasks = data[key];
+      if (tasks.length>0) { total += calcScore(tasks).pct; count++; }
+    }
+  }
+  if (!count) return '—';
+  const avg = Math.round(total/count);
+  if (avg>=90) return '👑 CHAMP';
+  if (avg>=80) return '⭐ PRO';
+  if (avg>=60) return '💪 STEADY';
+  return '🌱 GROWING';
+}
+
+// ===== MONTH SUMMARY STRIP =====
+function updateMonthSummary() {
+  const data = loadData();
+  let totalPct=0, activeDays=0, bestPct=0, tasksDone=0;
+
+  for (const key in data) {
+    const [y,m] = key.split('_').map(Number);
+    if (y===viewYear && m===(viewMonth+1)) {
+      const tasks = data[key];
+      if (!tasks.length) continue;
+      const { pct } = calcScore(tasks);
+      totalPct += pct; activeDays++;
+      if (pct>bestPct) bestPct=pct;
+      tasksDone += tasks.filter(t=>t.done).length;
+    }
+  }
+
+  document.getElementById('sumAvg').textContent   = activeDays ? Math.round(totalPct/activeDays)+'%' : '—';
+  document.getElementById('sumDays').textContent  = activeDays;
+  document.getElementById('sumBest').textContent  = activeDays ? bestPct+'%' : '—';
+  document.getElementById('sumTasks').textContent = tasksDone;
+}
+
+// ===== HEADER =====
+function updateHeaderDate() {
+  const d = selectedDate;
+  const isToday = d.toDateString() === realToday.toDateString();
+  document.getElementById('headerDate').textContent =
+    (isToday ? '📍 Today — ' : '') +
+    `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+// ===== TASK LIST =====
+function renderTaskList(tasks) {
+  const list  = document.getElementById('taskList');
+  const count = document.getElementById('taskCount');
+  count.textContent = `${tasks.length} task${tasks.length!==1?'s':''}`;
+
+  if (!tasks.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🌿</div>
+        <p>No tasks for this day</p>
+        <small>Add a task above to get started!</small>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = '';
+  tasks.forEach((task, i) => {
+    const div = document.createElement('div');
+    div.className = `task-item row-${i%5}${task.done?' done':''}`;
+    div.innerHTML = `
+      <div class="task-check${task.done?' checked':''}" onclick="toggleTask(${i})">${task.done?'✓':''}</div>
+      <div class="task-body">
+        <div class="task-name">${escHtml(task.name)}</div>
+        <div class="task-time">Added ${task.time||''}</div>
+      </div>
+      <div class="task-pts-badge">${task.pts} pts</div>
+      <div class="task-actions">
+        <button class="task-edit-btn" onclick="openEdit(${i})">✏️</button>
+        <button class="task-del-btn"  onclick="deleteTask(${i})">🗑️</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===== TASK ACTIONS =====
+function addTask() {
+  const nameEl = document.getElementById('taskInput');
+  const ptsEl  = document.getElementById('ptsInput');
+  const name   = nameEl.value.trim();
+  const pts    = Math.min(10, Math.max(0, parseInt(ptsEl.value)||0));
+  if (!name) { showToast('⚠️ Please enter a task name'); nameEl.focus(); return; }
+
+  const tasks = getTasks(selectedDate);
+  tasks.push({ name, pts, done:false, time:getTimeStr() });
+  setTasks(selectedDate, tasks);
+  nameEl.value=''; ptsEl.value='5'; nameEl.focus();
+  renderAll();
+  showToast('✅ Task added!');
+}
+
+function toggleTask(i) {
+  const tasks = getTasks(selectedDate);
+  tasks[i].done = !tasks[i].done;
+  setTasks(selectedDate, tasks);
+  renderAll();
+  if (tasks[i].done) triggerConfetti();
+}
+
+function deleteTask(i) {
+  const tasks = getTasks(selectedDate);
+  tasks.splice(i,1);
+  setTasks(selectedDate, tasks);
+  renderAll();
+  showToast('🗑️ Task deleted');
+}
+
+function openEdit(i) {
+  editingIndex = i;
+  const t = getTasks(selectedDate)[i];
+  document.getElementById('editTaskName').value = t.name;
+  document.getElementById('editTaskPts').value  = t.pts;
+  openModal('editModal');
+}
+
+function saveEdit() {
+  const name = document.getElementById('editTaskName').value.trim();
+  const pts  = Math.min(10,Math.max(0,parseInt(document.getElementById('editTaskPts').value)||0));
+  if (!name) { showToast('⚠️ Task name cannot be empty'); return; }
+  const tasks = getTasks(selectedDate);
+  tasks[editingIndex].name = name;
+  tasks[editingIndex].pts  = pts;
+  setTasks(selectedDate, tasks);
+  closeModal('editModal');
+  renderAll();
+  showToast('✏️ Task updated!');
+}
+
+// ===== JOURNAL =====
+function loadJournalForDate() {
+  document.getElementById('journalArea').value = (loadNotes())[getKey(selectedDate)] || '';
+}
+function saveJournal() {
+  const notes = loadNotes();
+  notes[getKey(selectedDate)] = document.getElementById('journalArea').value;
+  saveNotes(notes);
+  showToast('📓 Note saved!');
+}
+
+// ===== CONFETTI =====
+function triggerConfetti() {
+  if (typeof confetti!=='undefined') {
+    confetti({ particleCount:60, spread:70, origin:{y:0.6},
+      colors:['#7c9e87','#9b8ec4','#f39c12','#a8c5b0','#c4b9e8'] });
+  }
+}
+
+// ===== HISTORY =====
+function toggleHistory() {
+  historyOpen = !historyOpen;
+  document.getElementById('historySection').classList.toggle('open', historyOpen);
+  document.getElementById('historyArrow').textContent = historyOpen ? '▲' : '▼';
+  if (historyOpen) buildHistory();
+}
+
+function buildHistory() {
+  const label = `${SHORT_MONTHS[viewMonth]} ${viewYear}`;
+  document.getElementById('chartMonthLabel').textContent    = label;
+  document.getElementById('accuracyMonthLabel').textContent = label;
+  buildMonthChart();
+  buildAccuracy();
+}
+
+function buildMonthChart() {
+  const data = loadData();
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+  const labels=[], values=[];
+
+  for (let d=1; d<=daysInMonth; d++) {
+    const key   = `${viewYear}_${viewMonth+1}_${d}`;
+    const tasks = data[key]||[];
+    labels.push(d);
+    values.push(tasks.length>0 ? calcScore(tasks).pct : null);
+  }
+
+  const ctx = document.getElementById('monthChart').getContext('2d');
+  if (monthChart) monthChart.destroy();
+  monthChart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Daily Score %', data:values,
+        borderColor:'#7c9e87', backgroundColor:'rgba(124,158,135,0.1)',
+        pointBackgroundColor:'#9b8ec4', pointRadius:4,
+        tension:0.4, fill:true, spanGaps:true
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        y:{ min:0, max:100, ticks:{callback:v=>v+'%', font:{size:11}}, grid:{color:'rgba(0,0,0,0.05)'} },
+        x:{ ticks:{font:{size:11}}, grid:{display:false} }
+      }
+    }
+  });
+}
+
+function buildAccuracy() {
+  const data = loadData();
+  const stats = {};
+  for (const key in data) {
+    const [y,m] = key.split('_').map(Number);
+    if (y!==viewYear || m!==(viewMonth+1)) continue;
+    data[key].forEach(t => {
+      if (!stats[t.name]) stats[t.name]={total:0,done:0};
+      stats[t.name].total++;
+      if (t.done) stats[t.name].done++;
+    });
+  }
+
+  const list = document.getElementById('accuracyList');
+  const entries = Object.entries(stats).sort((a,b)=>(b[1].done/b[1].total)-(a[1].done/a[1].total));
+
+  if (!entries.length) {
+    list.innerHTML='<div style="color:var(--text-light);font-size:14px;text-align:center;padding:20px;">No data for this month yet.</div>';
+    return;
+  }
+
+  list.innerHTML='';
+  entries.forEach(([name,stat]) => {
+    const pct = Math.round((stat.done/stat.total)*100);
+    const div = document.createElement('div');
+    div.className='accuracy-item';
+    div.innerHTML=`
+      <div class="accuracy-header">
+        <div class="accuracy-name">${escHtml(name)}</div>
+        <div class="accuracy-pct">${pct}% (${stat.done}/${stat.total})</div>
+      </div>
+      <div class="accuracy-bar-bg">
+        <div class="accuracy-bar-fg" style="width:0%" data-width="${pct}%"></div>
+      </div>`;
+    list.appendChild(div);
+  });
+
+  setTimeout(()=>{
+    document.querySelectorAll('.accuracy-bar-fg').forEach(el=>{ el.style.width=el.dataset.width; });
+  },100);
+}
+
+// ===== BACKUP / RESTORE =====
+function openBackupModal() {
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify({ tasks:loadData(), notes:loadNotes() }))));
+  document.getElementById('backupCode').value = encoded;
+  openModal('backupModal');
+}
+function copyBackup() {
+  document.getElementById('backupCode').select();
+  document.execCommand('copy');
+  showToast('📋 Code copied to clipboard!');
+}
+function openRestoreModal() { document.getElementById('restoreCode').value=''; openModal('restoreModal'); }
+function restoreData() {
+  const code = document.getElementById('restoreCode').value.trim();
+  if (!code) { showToast('⚠️ Please paste a backup code'); return; }
+  try {
+    const dec = JSON.parse(decodeURIComponent(escape(atob(code))));
+    if (!dec.tasks||!dec.notes) throw 0;
+    saveData(dec.tasks); saveNotes(dec.notes);
+    closeModal('restoreModal'); renderAll();
+    showToast('✅ Data restored successfully!');
+  } catch { showToast('❌ Invalid backup code'); }
+}
+
+// ===== MODALS =====
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
+});
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ===== RENDER ALL =====
+function renderAll() {
+  const tasks = getTasks(selectedDate);
+  updateHeaderDate();
+  renderTaskList(tasks);
+  updateScoreUI(tasks);
+  updateMonthSummary();
+  loadJournalForDate();
+  if (historyOpen) buildHistory();
+}
+
+// ===== KEYBOARD =====
+document.getElementById('taskInput').addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    document.getElementById('app').classList.add('visible');
+    setTimeout(() => document.getElementById('splash').remove(), 700);
+    updateMonthNav();
+    buildCalendar();
+    renderAll();
+  }, 2200);
+});
+</script>
 </body>
 </html>
