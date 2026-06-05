@@ -1,1143 +1,883 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Daily Task Master 2026</title>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  :root {
-    --sage: #7c9e87;
-    --sage-light: #a8c5b0;
-    --sage-dark: #5a7a64;
-    --lavender: #9b8ec4;
-    --lavender-light: #c4b9e8;
-    --lavender-dark: #7a6aaa;
-    --bg: #f0ede8;
-    --card: #ffffff;
-    --text: #2d3436;
-    --text-light: #636e72;
-    --red: #e74c3c;
-    --gold: #f39c12;
-    --silver: #95a5a6;
-    --copper: #cd6133;
-    --row0: #fef9f0;
-    --row1: #f0f7f4;
-    --row2: #f4f0f9;
-    --row3: #f0f4ff;
-    --row4: #fff0f3;
-    --shadow: 0 4px 20px rgba(0,0,0,0.08);
-    --radius: 16px;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC CBT Simulator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Custom scrollbar for palette */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        
+        /* Hide views by default */
+        .view-section { display: none; }
+        .view-section.active { display: flex; }
+        
+        /* Form elements outline fix */
+        textarea:focus, input:focus { outline: none; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* SPLASH */
-  #splash {
-    position: fixed; inset: 0; z-index: 9999;
-    background: linear-gradient(135deg, var(--sage-dark) 0%, var(--lavender-dark) 100%);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 24px;
-  }
-  .splash-logo {
-    width: 90px; height: 90px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 28px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 48px;
-    animation: splashPulse 1.5s ease-in-out infinite;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  }
-  @keyframes splashPulse {
-    0%,100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-  }
-  .splash-title { color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px; text-align: center; }
-  .splash-subtitle { color: rgba(255,255,255,0.7); font-size: 13px; letter-spacing: 3px; text-transform: uppercase; }
-  .splash-bar-wrap { width: 220px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; }
-  .splash-bar { height: 100%; background: white; border-radius: 10px; width: 0; animation: loadBar 2s ease forwards; }
-  @keyframes loadBar {
-    0% { width: 0; } 30% { width: 40%; } 60% { width: 70%; } 100% { width: 100%; }
-  }
-  #splash.hide { animation: splashFade 0.6s ease forwards; }
-  @keyframes splashFade { to { opacity: 0; pointer-events: none; } }
-
-  /* APP */
-  #app { display: none; max-width: 480px; margin: 0 auto; padding-bottom: 40px; }
-  #app.visible { display: block; }
-
-  /* HEADER */
-  .header {
-    background: linear-gradient(135deg, var(--sage-dark), var(--lavender-dark));
-    padding: 20px 20px 28px;
-    position: relative; overflow: hidden;
-  }
-  .header::before {
-    content: ''; position: absolute; top: -40px; right: -40px;
-    width: 160px; height: 160px; background: rgba(255,255,255,0.07); border-radius: 50%;
-  }
-  .header::after {
-    content: ''; position: absolute; bottom: -30px; left: -20px;
-    width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%;
-  }
-  .header-top {
-    display: flex; align-items: center;
-    justify-content: space-between; margin-bottom: 4px;
-  }
-  .header-logo { font-size: 22px; }
-  .header-title { color: white; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
-  .header-actions { display: flex; gap: 8px; }
-  .icon-btn {
-    width: 38px; height: 38px;
-    background: rgba(255,255,255,0.15);
-    border: none; border-radius: 12px;
-    color: white; font-size: 16px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s;
-  }
-  .icon-btn:hover { background: rgba(255,255,255,0.25); }
-  .header-date { color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 2px; }
-
-  /* MONTH NAV */
-  .month-nav {
-    background: white;
-    padding: 10px 16px;
-    display: flex; align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  }
-  .month-nav-btn {
-    width: 36px; height: 36px;
-    background: var(--bg);
-    border: none; border-radius: 12px;
-    font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s; color: var(--text);
-    font-weight: 700;
-  }
-  .month-nav-btn:hover { background: var(--lavender-light); color: white; }
-  .month-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .month-nav-btn:disabled:hover { background: var(--bg); color: var(--text); }
-  .month-label-wrap { text-align: center; }
-  .month-label {
-    font-size: 16px; font-weight: 800; color: var(--text);
-    letter-spacing: 0.3px;
-  }
-  .month-label-sub {
-    font-size: 11px; color: var(--text-light);
-    margin-top: 1px;
-  }
-  .today-jump-btn {
-    font-size: 11px;
-    background: var(--sage);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 3px 9px;
-    cursor: pointer;
-    font-weight: 700;
-    margin-top: 3px;
-    display: inline-block;
-    transition: opacity 0.2s;
-  }
-  .today-jump-btn:hover { opacity: 0.85; }
-
-  /* CALENDAR */
-  .calendar-wrap {
-    background: white;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  }
-  .calendar-scroll {
-    display: flex; gap: 8px;
-    overflow-x: auto; padding: 4px 16px;
-    scrollbar-width: none;
-  }
-  .calendar-scroll::-webkit-scrollbar { display: none; }
-  .day-pill {
-    flex-shrink: 0;
-    display: flex; flex-direction: column;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: 14px; cursor: pointer;
-    background: var(--bg);
-    border: 2px solid transparent;
-    transition: all 0.2s; min-width: 52px;
-    position: relative;
-  }
-  .day-pill:hover { background: var(--lavender-light); }
-  .day-pill.active {
-    background: linear-gradient(135deg, var(--sage), var(--lavender));
-    color: white;
-  }
-  .day-pill.today { border-color: var(--red); }
-  .day-pill.today .today-tag {
-    position: absolute; top: -8px;
-    background: var(--red); color: white;
-    font-size: 8px; font-weight: 700;
-    padding: 1px 5px; border-radius: 6px; letter-spacing: 0.5px;
-  }
-  .day-pill.has-tasks::after {
-    content: '';
-    position: absolute; bottom: 4px;
-    width: 5px; height: 5px;
-    background: var(--sage);
-    border-radius: 50%;
-  }
-  .day-pill.active.has-tasks::after { background: rgba(255,255,255,0.7); }
-  .day-name { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; }
-  .day-num { font-size: 18px; font-weight: 800; line-height: 1.2; }
-  .day-pill.active .day-name,
-  .day-pill.active .day-num { opacity: 1; color: white; }
-
-  /* SCORE CARD */
-  .score-card {
-    margin: 16px; background: white;
-    border-radius: var(--radius); padding: 18px;
-    box-shadow: var(--shadow); display: flex; gap: 16px; align-items: center;
-  }
-  .score-ring { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
-  .score-ring svg { width: 80px; height: 80px; transform: rotate(-90deg); }
-  .score-ring circle { fill: none; stroke-width: 7; stroke-linecap: round; }
-  .ring-bg { stroke: #f0ede8; }
-  .ring-fg {
-    stroke: var(--sage); stroke-dasharray: 220; stroke-dashoffset: 220;
-    transition: stroke-dashoffset 1s ease, stroke 0.5s;
-  }
-  .score-text {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 800; color: var(--text);
-  }
-  .score-info { flex: 1; }
-  .score-label { font-size: 13px; color: var(--text-light); margin-bottom: 4px; }
-  .score-pts { font-size: 22px; font-weight: 800; color: var(--text); }
-  .score-pts span { font-size: 13px; font-weight: 500; color: var(--text-light); }
-
-  /* MONTH SUMMARY STRIP */
-  .month-summary {
-    margin: 0 16px 16px;
-    background: white; border-radius: var(--radius);
-    padding: 14px 18px; box-shadow: var(--shadow);
-    display: flex; gap: 0; overflow: hidden;
-  }
-  .summary-item {
-    flex: 1; text-align: center;
-    padding: 6px 4px;
-    border-right: 1px solid #f0ede8;
-  }
-  .summary-item:last-child { border-right: none; }
-  .summary-val { font-size: 20px; font-weight: 800; color: var(--text); }
-  .summary-lbl { font-size: 10px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
-
-  /* ACHIEVEMENT */
-  .achievement-box {
-    margin: 0 16px 16px;
-    background: linear-gradient(135deg, #fff8e1, #f3e5f5);
-    border-radius: var(--radius); padding: 14px 18px;
-    box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px;
-    border: 1px solid rgba(243,156,18,0.2);
-  }
-  .medal { font-size: 32px; }
-  .achieve-info { flex: 1; }
-  .achieve-title { font-size: 15px; font-weight: 800; color: var(--text); }
-  .achieve-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
-  .monthly-rank {
-    font-size: 13px; font-weight: 700;
-    padding: 5px 10px; border-radius: 10px;
-    background: rgba(155,142,196,0.15); color: var(--lavender-dark);
-    white-space: nowrap;
-  }
-
-  /* ADD TASK */
-  .add-section {
-    margin: 0 16px 16px; background: white;
-    border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
-  }
-  .add-section h3 {
-    font-size: 14px; font-weight: 700; color: var(--text-light);
-    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
-  }
-  .add-row { display: flex; gap: 8px; margin-bottom: 8px; }
-  .add-input {
-    flex: 1; padding: 10px 14px; border: 2px solid #eee;
-    border-radius: 12px; font-size: 14px; font-family: inherit;
-    outline: none; transition: border-color 0.2s; background: var(--bg);
-  }
-  .add-input:focus { border-color: var(--sage); }
-  .pts-input {
-    width: 70px; padding: 10px; border: 2px solid #eee;
-    border-radius: 12px; font-size: 14px; font-family: inherit;
-    outline: none; background: var(--bg); text-align: center;
-    transition: border-color 0.2s;
-  }
-  .pts-input:focus { border-color: var(--lavender); }
-  .add-btn {
-    width: 100%; padding: 12px;
-    background: linear-gradient(135deg, var(--sage), var(--lavender));
-    border: none; border-radius: 12px; color: white;
-    font-size: 14px; font-weight: 700; cursor: pointer;
-    letter-spacing: 0.5px; transition: opacity 0.2s, transform 0.1s;
-  }
-  .add-btn:hover { opacity: 0.9; }
-  .add-btn:active { transform: scale(0.98); }
-
-  /* TASK LIST */
-  .task-section { margin: 0 16px 16px; }
-  .task-section-header {
-    display: flex; align-items: center;
-    justify-content: space-between; margin-bottom: 10px; padding: 0 4px;
-  }
-  .task-section-title { font-size: 14px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
-  .task-count { font-size: 12px; background: var(--sage-light); color: white; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
-  .task-list { display: flex; flex-direction: column; gap: 8px; }
-  .task-item {
-    display: flex; align-items: center;
-    padding: 14px 14px; border-radius: 14px; gap: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: transform 0.15s, box-shadow 0.15s;
-    position: relative; overflow: hidden;
-  }
-  .task-item::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-    width: 4px; background: var(--sage); border-radius: 4px 0 0 4px;
-  }
-  .task-item.done::before { background: var(--lavender); }
-  .task-item:active { transform: scale(0.99); }
-  .task-item.row-0 { background: var(--row0); }
-  .task-item.row-1 { background: var(--row1); }
-  .task-item.row-2 { background: var(--row2); }
-  .task-item.row-3 { background: var(--row3); }
-  .task-item.row-4 { background: var(--row4); }
-  .task-check {
-    width: 26px; height: 26px; border-radius: 8px;
-    border: 2.5px solid var(--sage-light); background: white;
-    cursor: pointer; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s; font-size: 14px;
-  }
-  .task-check.checked {
-    background: linear-gradient(135deg, var(--sage), var(--lavender));
-    border-color: transparent; color: white;
-  }
-  .task-body { flex: 1; min-width: 0; }
-  .task-name {
-    font-size: 15px; font-weight: 600; color: var(--text);
-    transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .task-item.done .task-name { text-decoration: line-through; color: var(--text-light); }
-  .task-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
-  .task-pts-badge {
-    background: linear-gradient(135deg, var(--sage-light), var(--lavender-light));
-    color: white; font-size: 12px; font-weight: 700;
-    padding: 4px 10px; border-radius: 20px; white-space: nowrap;
-  }
-  .task-actions { display: flex; gap: 4px; }
-  .task-edit-btn, .task-del-btn {
-    width: 30px; height: 30px; border: none; border-radius: 8px;
-    cursor: pointer; font-size: 14px;
-    display: flex; align-items: center; justify-content: center; transition: background 0.2s;
-  }
-  .task-edit-btn { background: rgba(155,142,196,0.15); color: var(--lavender-dark); }
-  .task-del-btn { background: rgba(231,76,60,0.1); color: var(--red); }
-  .task-edit-btn:hover { background: rgba(155,142,196,0.3); }
-  .task-del-btn:hover { background: rgba(231,76,60,0.2); }
-
-  /* EMPTY STATE */
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
-  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
-  .empty-state p { font-size: 15px; font-weight: 500; }
-  .empty-state small { font-size: 12px; }
-
-  /* JOURNAL */
-  .journal-section {
-    margin: 0 16px 16px; background: white;
-    border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
-  }
-  .journal-section h3 {
-    font-size: 14px; font-weight: 700; color: var(--text-light);
-    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .journal-textarea {
-    width: 100%; min-height: 100px; padding: 12px;
-    border: 2px solid #eee; border-radius: 12px; font-size: 14px;
-    font-family: inherit; resize: vertical; outline: none;
-    background: var(--bg); color: var(--text); transition: border-color 0.2s; line-height: 1.5;
-  }
-  .journal-textarea:focus { border-color: var(--lavender); }
-  .save-journal-btn {
-    margin-top: 8px; padding: 9px 20px; background: var(--lavender);
-    border: none; border-radius: 10px; color: white;
-    font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
-  }
-  .save-journal-btn:hover { opacity: 0.85; }
-
-  /* HISTORY TOGGLE */
-  .history-toggle-btn {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: calc(100% - 32px); margin: 0 16px 16px;
-    padding: 14px; background: white;
-    border: 2px dashed var(--sage-light); border-radius: var(--radius);
-    cursor: pointer; color: var(--sage-dark);
-    font-size: 14px; font-weight: 700; transition: all 0.2s; font-family: inherit;
-  }
-  .history-toggle-btn:hover { background: var(--row1); border-color: var(--sage); }
-
-  /* HISTORY */
-  #historySection { margin: 0 16px 16px; display: none; }
-  #historySection.open { display: block; }
-  .history-card {
-    background: white; border-radius: var(--radius);
-    padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px;
-  }
-  .history-card h3 {
-    font-size: 15px; font-weight: 800; margin-bottom: 14px;
-    color: var(--text); display: flex; align-items: center; gap: 8px;
-  }
-  .chart-wrap { position: relative; height: 180px; }
-  .accuracy-list { display: flex; flex-direction: column; gap: 10px; }
-  .accuracy-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .accuracy-name { font-size: 14px; font-weight: 600; color: var(--text); }
-  .accuracy-pct { font-size: 13px; font-weight: 700; color: var(--sage-dark); }
-  .accuracy-bar-bg { height: 7px; background: #eee; border-radius: 10px; overflow: hidden; }
-  .accuracy-bar-fg {
-    height: 100%; border-radius: 10px;
-    background: linear-gradient(90deg, var(--sage), var(--lavender)); transition: width 1s ease;
-  }
-
-  /* MODALS */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(6px); z-index: 1000;
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: white; border-radius: 24px; padding: 24px;
-    width: 100%; max-width: 380px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    transform: translateY(20px) scale(0.97); transition: transform 0.3s;
-  }
-  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
-  .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
-  .modal p { font-size: 13px; color: var(--text-light); margin-bottom: 16px; line-height: 1.5; }
-  .modal-textarea {
-    width: 100%; height: 120px; padding: 12px;
-    border: 2px solid #eee; border-radius: 12px; font-size: 12px;
-    font-family: monospace; resize: none; outline: none;
-    background: var(--bg); color: var(--text); word-break: break-all; transition: border-color 0.2s;
-  }
-  .modal-textarea:focus { border-color: var(--lavender); }
-  .modal-actions { display: flex; gap: 8px; margin-top: 14px; }
-  .modal-btn {
-    flex: 1; padding: 12px; border: none; border-radius: 12px;
-    font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; font-family: inherit;
-  }
-  .modal-btn.primary { background: linear-gradient(135deg, var(--sage), var(--lavender)); color: white; }
-  .modal-btn.secondary { background: var(--bg); color: var(--text); }
-  .modal-btn:hover { opacity: 0.85; }
-  .edit-input-wrap { margin-bottom: 12px; }
-  .edit-input-wrap label {
-    font-size: 12px; font-weight: 700; color: var(--text-light);
-    text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;
-  }
-  .edit-input {
-    width: 100%; padding: 11px 14px; border: 2px solid #eee;
-    border-radius: 12px; font-size: 14px; font-family: inherit;
-    outline: none; background: var(--bg); transition: border-color 0.2s;
-  }
-  .edit-input:focus { border-color: var(--sage); }
-
-  /* TOAST */
-  #toast {
-    position: fixed; bottom: 30px; left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text); color: white;
-    padding: 12px 22px; border-radius: 50px;
-    font-size: 14px; font-weight: 600; z-index: 5000;
-    opacity: 0; transition: all 0.3s; white-space: nowrap; pointer-events: none;
-  }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  @media (min-width: 481px) {
-    body { background: linear-gradient(135deg, #e8e4f0 0%, #e4f0e8 100%); }
-    #app { margin-top: 20px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-  }
-</style>
+        /* Loader animation */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .animate-spin-slow { animation: spin 2s linear infinite; }
+    </style>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen text-gray-800 antialiased selection:bg-blue-200 selection:text-blue-900">
 
-<!-- SPLASH -->
-<div id="splash">
-  <div class="splash-logo">🌿</div>
-  <div>
-    <div class="splash-title">Daily Task Master</div>
-    <div class="splash-subtitle">2026 Edition</div>
-  </div>
-  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
-</div>
+    <!-- VIEW 1: SETUP -->
+    <div id="setup-view" class="view-section active min-h-screen bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] bg-cover bg-fixed items-center justify-center p-4">
+        <div class="backdrop-blur-xl bg-white/90 border border-white/50 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-8 text-center text-white">
+                <h1 class="text-3xl md:text-4xl font-black tracking-tight mb-2 flex justify-center items-center gap-3">
+                   <i class="ph-fill ph-brain text-4xl"></i> SSC CBT SIMULATOR
+                </h1>
+                <p class="text-blue-100 font-medium opacity-90 tracking-wide">Eduquity Pattern Examination Platform</p>
+            </div>
+            
+            <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Left Column -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider">Source Material</label>
+                    
+                    <div id="error-msg" class="hidden bg-red-50 text-red-700 p-3 rounded-xl border border-red-200 text-sm font-semibold items-start gap-2 animate-pulse">
+                        <i class="ph-fill ph-x-circle text-lg mt-0.5 shrink-0"></i> <span id="error-text"></span>
+                    </div>
 
-<!-- APP -->
-<div id="app">
+                    <textarea id="source-text" class="w-full h-40 p-4 rounded-2xl border border-gray-200 bg-white/70 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-inner resize-none text-gray-800 placeholder-gray-400 transition-all" placeholder="Paste notes, article, or syllabus here..."></textarea>
+                    
+                    <div class="flex items-center justify-center w-full relative">
+                        <label id="file-upload-label" class="w-full flex flex-col items-center px-4 py-6 rounded-2xl border-2 border-dashed cursor-pointer transition-all bg-white/70 text-blue-600 border-blue-200 hover:bg-blue-50">
+                            <i id="file-icon" class="ph ph-cloud-arrow-up text-3xl"></i>
+                            <span id="file-name" class="mt-2 text-xs font-bold uppercase truncate max-w-[200px]">Upload PDF Document</span>
+                            <input type="file" id="pdf-upload" class="hidden" accept=".pdf" />
+                        </label>
+                        <button id="remove-file-btn" class="hidden absolute top-2 right-2 text-red-500 hover:bg-red-100 p-2 rounded-full transition-colors">
+                            <i class="ph ph-trash text-lg"></i>
+                        </button>
+                    </div>
+                </div>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-top">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div class="header-logo">🌿</div>
-        <div>
-          <div class="header-title">Daily Task Master</div>
-          <div class="header-date" id="headerDate"></div>
+                <!-- Right Column -->
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">Difficulty</label>
+                        <div class="grid grid-cols-3 gap-2" id="difficulty-btns">
+                            <button data-level="Easy" class="diff-btn py-2 rounded-xl text-xs font-bold transition-all bg-white/70 text-gray-700 hover:bg-white border border-gray-200 shadow-sm">Easy</button>
+                            <button data-level="Intermediate" class="diff-btn py-2 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow-md">Intermediate</button>
+                            <button data-level="Hard" class="diff-btn py-2 rounded-xl text-xs font-bold transition-all bg-white/70 text-gray-700 hover:bg-white border border-gray-200 shadow-sm">Hard</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">Questions</label>
+                            <input type="number" id="question-count" min="1" max="200" value="25" class="w-full p-3 rounded-xl border border-gray-200 bg-white/70 focus:ring-2 focus:ring-blue-500 text-gray-800 font-medium">
+                            <p id="token-warning" class="hidden text-[10px] text-orange-600 mt-1 flex items-center gap-1 font-semibold leading-tight">
+                                <i class="ph-fill ph-warning"></i> May hit API limits
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wider">Time (Mins)</label>
+                            <input type="number" id="time-limit" min="1" max="300" value="30" class="w-full p-3 rounded-xl border border-gray-200 bg-white/70 focus:ring-2 focus:ring-blue-500 text-gray-800 font-medium">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 uppercase flex items-center gap-2 tracking-wider">
+                           <i class="ph-fill ph-key"></i> API Key (Optional)
+                        </label>
+                        <input type="password" id="api-key" class="w-full p-3 rounded-xl border border-gray-200 bg-white/70 focus:ring-2 focus:ring-blue-500 text-gray-800" placeholder="System key used if empty">
+                    </div>
+
+                    <button id="start-btn" class="w-full py-4 mt-2 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-200 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                        Start Examination <i class="ph-bold ph-caret-right text-xl"></i>
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="header-actions">
-        <button class="icon-btn" onclick="openBackupModal()" title="Backup">💾</button>
-        <button class="icon-btn" onclick="openRestoreModal()" title="Restore">📥</button>
-      </div>
     </div>
-  </div>
 
-  <!-- MONTH NAV -->
-  <div class="month-nav">
-    <button class="month-nav-btn" id="prevMonthBtn" onclick="changeMonth(-1)">‹</button>
-    <div class="month-label-wrap">
-      <div class="month-label" id="monthLabel"></div>
-      <div class="month-label-sub" id="monthLabelSub"></div>
-      <button class="today-jump-btn" onclick="jumpToToday()" id="todayJumpBtn">Jump to Today</button>
+    <!-- VIEW 2: GENERATING -->
+    <div id="generating-view" class="view-section min-h-screen bg-[#1e293b] flex-col items-center justify-center text-white">
+        <i class="ph ph-spinner text-6xl text-blue-400 mb-6 animate-spin-slow"></i>
+        <p class="text-xl font-medium tracking-widest animate-pulse">GENERATING TEST PAPER...</p>
+        <p class="text-sm text-slate-400 mt-4 max-w-md text-center">Creating questions based on your material. This may take a moment.</p>
     </div>
-    <button class="month-nav-btn" id="nextMonthBtn" onclick="changeMonth(1)">›</button>
-  </div>
 
-  <!-- CALENDAR -->
-  <div class="calendar-wrap">
-    <div class="calendar-scroll" id="calendarScroll"></div>
-  </div>
+    <!-- VIEW 3: EXAM (SSC PATTERN) -->
+    <div id="exam-view" class="view-section min-h-screen bg-gray-200 flex-col font-sans select-none overflow-hidden h-screen">
+        <!-- Top Header -->
+        <header class="bg-white h-16 flex items-center justify-between border-b-4 border-blue-700 shrink-0 shadow-sm relative z-20">
+            <div class="px-4 sm:px-6 font-black text-xl sm:text-2xl text-blue-800 tracking-wider">
+                EDU<span class="text-gray-700">QUITY</span> <span class="text-sm font-bold text-gray-500 ml-2 hidden sm:inline">| ASSESSMENT PORTAL</span>
+            </div>
+            <div class="flex h-full">
+                <div class="hidden sm:flex flex-col justify-center px-6 border-l border-gray-200 bg-gray-50">
+                    <span class="text-xs text-gray-500 font-bold">Time Left:</span>
+                    <span id="timer-desktop" class="font-mono text-xl font-bold text-red-600">00:00</span>
+                </div>
+                <div class="flex items-center px-4 border-l border-gray-200 bg-[#e2f0fb]">
+                    <div class="w-10 h-10 bg-white border-2 border-gray-300 rounded overflow-hidden mr-3 flex items-center justify-center shrink-0">
+                        <i class="ph-fill ph-user text-3xl text-gray-400 mt-2"></i>
+                    </div>
+                    <div class="text-left hidden sm:block">
+                        <p class="text-xs font-bold text-gray-800 uppercase leading-tight">CANDIDATE_NAME</p>
+                        <p class="text-[10px] text-gray-600 uppercase font-semibold">Subject: General Test</p>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-  <!-- SCORE CARD -->
-  <div class="score-card">
-    <div class="score-ring">
-      <svg viewBox="0 0 80 80">
-        <circle class="ring-bg" cx="40" cy="40" r="35"/>
-        <circle class="ring-fg" id="ringFg" cx="40" cy="40" r="35"/>
-      </svg>
-      <div class="score-text" id="scoreText">0%</div>
+        <div class="flex flex-1 overflow-hidden relative">
+            <!-- Main Question Area -->
+            <main class="flex-1 flex flex-col bg-white h-full border-r border-gray-300">
+                <!-- Subject Tabs -->
+                <div class="bg-[#4aa0e6] px-2 pt-2 flex gap-1 shrink-0">
+                    <div class="bg-white text-blue-800 font-bold text-sm px-4 py-2 rounded-t-md">
+                        General Section
+                    </div>
+                </div>
+
+                <!-- Question Header -->
+                <div class="px-4 py-2 bg-gray-100 border-b border-gray-300 flex justify-between items-center shrink-0">
+                    <span id="q-number-header" class="text-base font-bold text-gray-800">Question No. 1</span>
+                    <div class="flex gap-4 items-center">
+                        <div id="timer-mobile" class="sm:hidden font-mono text-base font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">00:00</div>
+                        <i class="ph-bold ph-info text-xl text-[#4aa0e6] cursor-pointer hover:opacity-80"></i>
+                    </div>
+                </div>
+
+                <!-- Question Content -->
+                <div class="p-4 sm:p-6 flex-1 overflow-y-auto">
+                    <div class="max-w-4xl">
+                        <p id="q-text" class="text-base sm:text-lg text-gray-900 mb-8 font-semibold leading-relaxed border-b border-gray-100 pb-4 whitespace-pre-wrap"></p>
+                        <div id="q-options" class="space-y-3">
+                            <!-- Options injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Controls -->
+                <footer class="bg-white border-t border-gray-300 p-3 sm:p-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 shrink-0 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-10">
+                    <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                        <button id="btn-mark" class="flex-1 sm:flex-none px-3 sm:px-5 py-2 border border-gray-400 bg-white text-gray-800 rounded font-bold text-xs sm:text-sm hover:bg-gray-100 transition-colors whitespace-nowrap">
+                            Mark for Review & Next
+                        </button>
+                        <button id="btn-clear" class="flex-1 sm:flex-none px-3 sm:px-5 py-2 border border-gray-400 bg-white text-gray-800 rounded font-bold text-xs sm:text-sm hover:bg-gray-100 transition-colors whitespace-nowrap">
+                            Clear Response
+                        </button>
+                    </div>
+                    <div class="flex gap-2 sm:gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                        <button id="btn-prev" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 border font-bold rounded text-xs sm:text-sm transition-colors bg-gray-200 text-gray-800 border-gray-400 hover:bg-gray-300">
+                            Previous
+                        </button>
+                        <button id="btn-save" class="flex-1 sm:flex-none px-6 sm:px-8 py-2 bg-[#2eaa31] border border-[#238b25] text-white font-bold rounded text-xs sm:text-sm hover:bg-green-700 transition-colors whitespace-nowrap">
+                            Save & Next
+                        </button>
+                    </div>
+                </footer>
+            </main>
+
+            <!-- Right Palette Area -->
+            <aside id="palette-sidebar" class="w-[320px] bg-[#e2f0fb] flex-col absolute xl:relative right-0 h-full transform translate-x-full xl:translate-x-0 transition-transform duration-300 z-30 shrink-0 shadow-2xl xl:shadow-none flex">
+                
+                <!-- Mobile Palette Toggle -->
+                <button id="btn-toggle-palette" class="xl:hidden absolute -left-12 top-2 bg-[#4aa0e6] text-white p-2 rounded-l-md shadow-md">
+                    <i class="ph-bold ph-squares-four text-2xl"></i>
+                </button>
+
+                <!-- Candidate Photo Block -->
+                <div class="bg-white p-2 border-b border-gray-300 flex items-center justify-center h-[140px] shrink-0 shadow-sm">
+                    <div class="w-[100px] h-[120px] bg-gray-100 border border-gray-300 flex flex-col items-center justify-center text-gray-400">
+                        <i class="ph-fill ph-user text-4xl mb-2"></i>
+                        <span class="text-[10px] font-bold">PROFILE</span>
+                    </div>
+                </div>
+
+                <!-- Color Legend -->
+                <div class="bg-white p-3 border-b border-gray-300 shrink-0">
+                    <div class="grid grid-cols-2 gap-x-1 gap-y-3 text-[11px] font-bold text-gray-700">
+                        <div class="flex items-center gap-2">
+                            <div id="stat-ans" class="w-7 h-7 bg-[#2eaa31] rounded-t-md rounded-b-sm text-white flex items-center justify-center font-bold text-[12px] shadow-sm">0</div> Answered
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div id="stat-notans" class="w-7 h-7 bg-[#dc2626] rounded-t-md rounded-b-sm text-white flex items-center justify-center font-bold text-[12px] shadow-sm">0</div> Not Answered
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div id="stat-notvis" class="w-7 h-7 bg-white border border-gray-300 rounded text-gray-500 flex items-center justify-center font-bold text-[12px]">0</div> Not Visited
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div id="stat-marked" class="w-7 h-7 bg-[#9333ea] rounded-full text-white flex items-center justify-center font-bold text-[12px] shadow-sm">0</div> Marked for Review
+                        </div>
+                        <div class="flex items-start gap-2 col-span-2 mt-1">
+                            <div class="w-7 h-7 bg-[#9333ea] rounded-full relative shrink-0 shadow-sm flex items-center justify-center text-white font-bold text-[12px]">
+                                <span id="stat-ansmarked">0</span>
+                                <div class="w-2.5 h-2.5 bg-[#2eaa31] rounded-full absolute bottom-0 right-0 border border-white"></div>
+                            </div> 
+                            <span class="leading-tight">Answered & Marked for Review (considered for evaluation)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Palette Header -->
+                <div class="bg-[#4aa0e6] text-white font-bold text-sm px-3 py-2 shrink-0 flex justify-between">
+                    <span>General Section</span>
+                    <button id="btn-close-palette" class="xl:hidden hover:text-gray-200"><i class="ph-bold ph-x"></i></button>
+                </div>
+
+                <!-- Question Palette Grid -->
+                <div class="p-3 bg-[#e2f0fb] flex-1 overflow-y-auto">
+                    <h3 class="text-xs font-bold text-gray-700 mb-3">Choose a Question</h3>
+                    <div id="palette-grid" class="grid grid-cols-5 gap-2">
+                        <!-- Palette buttons injected here -->
+                    </div>
+                </div>
+
+                <!-- Final Submit Button -->
+                <div class="p-3 border-t border-gray-300 bg-[#e2f0fb] shrink-0">
+                    <button id="btn-submit" class="w-full py-3 bg-white text-gray-800 border-2 border-gray-400 font-bold rounded text-sm hover:bg-gray-100 transition-colors shadow-sm">
+                        Submit Examination
+                    </button>
+                </div>
+            </aside>
+            
+            <!-- Mobile Overlay for palette -->
+            <div id="palette-overlay" class="hidden xl:hidden fixed inset-0 bg-black/50 z-20"></div>
+
+        </div>
     </div>
-    <div class="score-info">
-      <div class="score-label">Weighted Score</div>
-      <div class="score-pts" id="scorePts">0 <span>pts earned</span></div>
-      <div class="score-label" id="scoreDenom" style="margin-top:2px;"></div>
+
+    <!-- VIEW 4: RESULTS -->
+    <div id="results-view" class="view-section min-h-screen bg-slate-50 items-center justify-center p-4">
+        <div class="bg-white max-w-3xl w-full rounded-2xl shadow-2xl p-8 sm:p-12 text-center border border-gray-200">
+            <div class="inline-block p-4 bg-green-50 text-green-600 rounded-full mb-6 ring-4 ring-green-100">
+                <i class="ph-fill ph-check-circle text-6xl"></i>
+            </div>
+            <h2 class="text-3xl font-black text-gray-800 mb-2">Examination Completed</h2>
+            <p class="text-gray-500 mb-8 font-medium">Eduquity Pattern CBT Assessment</p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="p-6 bg-[#4aa0e6] text-white rounded-xl shadow-md border border-blue-400">
+                    <p class="text-sm opacity-90 uppercase tracking-wider font-bold mb-1">Percentage</p>
+                    <p id="res-percent" class="text-4xl sm:text-5xl font-black">0%</p>
+                </div>
+                <div class="p-6 bg-slate-800 text-white rounded-xl shadow-md border border-slate-700">
+                    <p class="text-sm opacity-90 uppercase tracking-wider font-bold mb-1">Score</p>
+                    <p class="text-4xl sm:text-5xl font-black"><span id="res-score">0</span><span class="text-2xl text-slate-400" id="res-total">/0</span></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10 text-sm font-semibold text-gray-700">
+                <div class="bg-green-50 p-3 rounded-lg border border-green-100 flex flex-col items-center">
+                    <span id="res-correct" class="text-green-600 font-bold block text-2xl">0</span> 
+                    <span class="text-gray-600">Correct</span>
+                </div>
+                <div class="bg-red-50 p-3 rounded-lg border border-red-100 flex flex-col items-center">
+                    <span id="res-incorrect" class="text-red-600 font-bold block text-2xl">0</span> 
+                    <span class="text-gray-600">Incorrect</span>
+                </div>
+                <div class="bg-gray-100 p-3 rounded-lg border border-gray-200 flex flex-col items-center">
+                    <span id="res-unanswered" class="text-gray-600 font-bold block text-2xl">0</span> 
+                    <span class="text-gray-600">Unanswered</span>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-lg border border-purple-100 flex flex-col items-center">
+                    <span id="res-marked" class="text-purple-600 font-bold block text-2xl">0</span> 
+                    <span class="text-gray-600">Marked</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button id="btn-go-review" class="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
+                    <i class="ph-bold ph-eye text-xl"></i> Review Answers
+                </button>
+                <button id="btn-restart" class="flex-1 py-4 bg-white text-gray-800 border-2 border-gray-200 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm">
+                    <i class="ph-bold ph-arrow-counter-clockwise text-xl"></i> Create New Assessment
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- MONTH SUMMARY -->
-  <div class="month-summary">
-    <div class="summary-item">
-      <div class="summary-val" id="sumAvg">—</div>
-      <div class="summary-lbl">Avg Score</div>
+    <!-- VIEW 5: REVIEW -->
+    <div id="review-view" class="view-section min-h-screen bg-gray-100 flex-col">
+        <header class="bg-white border-b shadow-sm sticky top-0 z-20 px-4 sm:px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button id="btn-back-results" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
+                    <i class="ph-bold ph-arrow-left text-2xl"></i>
+                </button>
+                <h1 class="text-xl font-black text-gray-800">Review Assessment</h1>
+            </div>
+            <div id="review-score-badge" class="bg-blue-50 text-blue-800 px-4 py-2 rounded-lg font-bold text-sm border border-blue-200">
+                Score: 0 / 0
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-8">
+            <div id="review-container" class="max-w-4xl mx-auto space-y-6">
+                <!-- Review items injected here -->
+            </div>
+        </main>
     </div>
-    <div class="summary-item">
-      <div class="summary-val" id="sumDays">0</div>
-      <div class="summary-lbl">Active Days</div>
-    </div>
-    <div class="summary-item">
-      <div class="summary-val" id="sumBest">—</div>
-      <div class="summary-lbl">Best Day</div>
-    </div>
-    <div class="summary-item">
-      <div class="summary-val" id="sumTasks">0</div>
-      <div class="summary-lbl">Tasks Done</div>
-    </div>
-  </div>
-
-  <!-- ACHIEVEMENT -->
-  <div class="achievement-box">
-    <div class="medal" id="medalIcon">🎯</div>
-    <div class="achieve-info">
-      <div class="achieve-title" id="achieveTitle">Keep Going!</div>
-      <div class="achieve-sub" id="achieveSub">Complete tasks to earn medals</div>
-    </div>
-    <div class="monthly-rank" id="monthlyRank">—</div>
-  </div>
-
-  <!-- ADD TASK -->
-  <div class="add-section">
-    <h3>✏️ Add Task</h3>
-    <div class="add-row">
-      <input type="text" class="add-input" id="taskInput" placeholder="Task name..." maxlength="60"/>
-      <input type="number" class="pts-input" id="ptsInput" placeholder="Pts" min="0" max="10" value="5"/>
-    </div>
-    <button class="add-btn" onclick="addTask()">＋ Add Task</button>
-  </div>
-
-  <!-- TASK LIST -->
-  <div class="task-section">
-    <div class="task-section-header">
-      <div class="task-section-title">📋 Tasks</div>
-      <div class="task-count" id="taskCount">0 tasks</div>
-    </div>
-    <div class="task-list" id="taskList"></div>
-  </div>
-
-  <!-- JOURNAL -->
-  <div class="journal-section">
-    <h3>📓 Daily Journal</h3>
-    <textarea class="journal-textarea" id="journalArea" placeholder="Write your thoughts, notes, reflections for this day..."></textarea>
-    <button class="save-journal-btn" onclick="saveJournal()">💾 Save Note</button>
-  </div>
-
-  <!-- HISTORY TOGGLE -->
-  <button class="history-toggle-btn" onclick="toggleHistory()" id="historyToggleBtn">
-    <span>📊</span> <span>Performance History</span> <span id="historyArrow">▼</span>
-  </button>
-
-  <!-- HISTORY -->
-  <div id="historySection">
-    <div class="history-card">
-      <h3>📈 Monthly Performance — <span id="chartMonthLabel"></span></h3>
-      <div class="chart-wrap"><canvas id="monthChart"></canvas></div>
-    </div>
-    <div class="history-card">
-      <h3>🎯 Task Accuracy — <span id="accuracyMonthLabel"></span></h3>
-      <div class="accuracy-list" id="accuracyList"></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- EDIT MODAL -->
-<div class="modal-overlay" id="editModal">
-  <div class="modal">
-    <h3>✏️ Edit Task</h3>
-    <p>Update the task name or its point value.</p>
-    <div class="edit-input-wrap">
-      <label>Task Name</label>
-      <input type="text" class="edit-input" id="editTaskName" maxlength="60"/>
-    </div>
-    <div class="edit-input-wrap">
-      <label>Points (0–10)</label>
-      <input type="number" class="edit-input" id="editTaskPts" min="0" max="10"/>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeModal('editModal')">Cancel</button>
-      <button class="modal-btn primary" onclick="saveEdit()">Save Changes</button>
-    </div>
-  </div>
-</div>
-
-<!-- BACKUP MODAL -->
-<div class="modal-overlay" id="backupModal">
-  <div class="modal">
-    <h3>💾 Backup Data</h3>
-    <p>Copy this code and save it somewhere safe. Use it to restore your data anytime.</p>
-    <textarea class="modal-textarea" id="backupCode" readonly></textarea>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeModal('backupModal')">Close</button>
-      <button class="modal-btn primary" onclick="copyBackup()">📋 Copy Code</button>
-    </div>
-  </div>
-</div>
-
-<!-- RESTORE MODAL -->
-<div class="modal-overlay" id="restoreModal">
-  <div class="modal">
-    <h3>📥 Restore Data</h3>
-    <p>Paste your backup code below. This will <strong>replace</strong> all current data.</p>
-    <textarea class="modal-textarea" id="restoreCode" placeholder="Paste your backup code here..."></textarea>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeModal('restoreModal')">Cancel</button>
-      <button class="modal-btn primary" onclick="restoreData()">🔄 Restore</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div id="toast"></div>
-
-<script>
-// ===== CONSTANTS =====
-const STORAGE_KEY = 'HabitPro_Daily_Mode';
-const NOTES_KEY   = 'HabitPro_Notes_Daily';
-const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const MONTHS = ['January','February','March','April','May','June',
-                'July','August','September','October','November','December'];
-const SHORT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun',
-                      'Jul','Aug','Sep','Oct','Nov','Dec'];
-
-// ===== STATE =====
-const realToday  = new Date();
-let viewYear     = realToday.getFullYear();
-let viewMonth    = realToday.getMonth();      // 0-based
-let selectedDate = new Date(realToday);
-let editingIndex = -1;
-let monthChart   = null;
-let historyOpen  = false;
-
-// ===== DATA HELPERS =====
-function getKey(date) {
-  return `${date.getFullYear()}_${date.getMonth()+1}_${date.getDate()}`;
-}
-function loadData()  { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } }
-function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
-function loadNotes() { try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || {}; }  catch { return {}; } }
-function saveNotes(n){ localStorage.setItem(NOTES_KEY, JSON.stringify(n)); }
-function getTasks(date)        { return loadData()[getKey(date)] || []; }
-function setTasks(date, tasks) { const d = loadData(); d[getKey(date)] = tasks; saveData(d); }
-
-// ===== TIME =====
-function getTimeStr() {
-  const n = new Date(); let h = n.getHours(), m = n.getMinutes();
-  const ap = h >= 12 ? 'pm' : 'am'; h = h%12||12; m = m<10?'0'+m:m;
-  return `at ${h}:${m} ${ap}`;
-}
-
-// ===== MONTH NAVIGATION =====
-function changeMonth(dir) {
-  viewMonth += dir;
-  if (viewMonth > 11) { viewMonth = 0;  viewYear++; }
-  if (viewMonth < 0)  { viewMonth = 11; viewYear--; }
-
-  // If selected date is not in new month, move to day 1 of new month
-  if (selectedDate.getMonth() !== viewMonth || selectedDate.getFullYear() !== viewYear) {
-    const daysInNew = new Date(viewYear, viewMonth+1, 0).getDate();
-    const newDay = Math.min(selectedDate.getDate(), daysInNew);
-    selectedDate = new Date(viewYear, viewMonth, newDay);
-  }
-
-  updateMonthNav();
-  buildCalendar();
-  renderAll();
-}
-
-function jumpToToday() {
-  viewYear  = realToday.getFullYear();
-  viewMonth = realToday.getMonth();
-  selectedDate = new Date(realToday);
-  updateMonthNav();
-  buildCalendar();
-  renderAll();
-  showToast('📅 Jumped to today!');
-}
-
-function updateMonthNav() {
-  document.getElementById('monthLabel').textContent    = `${MONTHS[viewMonth]} ${viewYear}`;
-  const isCurrentMonth = viewMonth === realToday.getMonth() && viewYear === realToday.getFullYear();
-  document.getElementById('monthLabelSub').textContent = isCurrentMonth ? '📍 Current Month' : '📂 Past / Future Month';
-  document.getElementById('todayJumpBtn').style.display = isCurrentMonth ? 'none' : 'inline-block';
-  // No hard limit on navigation
-  document.getElementById('prevMonthBtn').disabled = false;
-  document.getElementById('nextMonthBtn').disabled = false;
-}
-
-// ===== CALENDAR =====
-function buildCalendar() {
-  const scroll = document.getElementById('calendarScroll');
-  scroll.innerHTML = '';
-  const data = loadData();
-  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(viewYear, viewMonth, d);
-    const key  = getKey(date);
-    const isToday    = date.toDateString() === realToday.toDateString();
-    const isSelected = date.toDateString() === selectedDate.toDateString();
-    const hasTasks   = data[key] && data[key].length > 0;
-
-    const pill = document.createElement('div');
-    pill.className = 'day-pill' +
-      (isToday    ? ' today'    : '') +
-      (isSelected ? ' active'   : '') +
-      (hasTasks   ? ' has-tasks': '');
-
-    if (isToday) {
-      const tag = document.createElement('span');
-      tag.className = 'today-tag'; tag.textContent = 'TODAY';
-      pill.appendChild(tag);
-    }
-
-    pill.innerHTML += `<div class="day-name">${DAYS[date.getDay()]}</div><div class="day-num">${d}</div>`;
-
-    pill.addEventListener('click', () => {
-      selectedDate = date;
-      buildCalendar();
-      renderAll();
-    });
-
-    scroll.appendChild(pill);
-    if (isSelected) {
-      setTimeout(() => pill.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' }), 80);
-    }
-  }
-}
-
-// ===== SCORE =====
-function calcScore(tasks) {
-  const total  = tasks.reduce((s,t) => s+(t.pts||0), 0);
-  const earned = tasks.filter(t=>t.done).reduce((s,t) => s+(t.pts||0), 0);
-  const pct    = total===0 ? 0 : Math.round((earned/total)*100);
-  return { total, earned, pct };
-}
-
-function updateScoreUI(tasks) {
-  const { total, earned, pct } = calcScore(tasks);
-  const C = 2*Math.PI*35;
-  const offset = C - (pct/100)*C;
-
-  document.getElementById('scoreText').textContent = pct+'%';
-  document.getElementById('scorePts').innerHTML    = `${earned} <span>pts earned</span>`;
-  document.getElementById('scoreDenom').textContent= `out of ${total} total pts`;
-
-  const ring = document.getElementById('ringFg');
-  ring.style.strokeDasharray  = C;
-  ring.style.strokeDashoffset = offset;
-  ring.style.stroke = pct>=90?'#f39c12':pct>=80?'#95a5a6':pct>=60?'#cd6133':'var(--sage)';
-
-  let medal='🎯', title='Keep Going!', sub='Complete tasks to earn medals';
-  if      (pct>=90) { medal='🥇'; title='Gold Medal!';   sub=`Excellent! ${pct}% weighted score`; }
-  else if (pct>=80) { medal='🥈'; title='Silver Medal!'; sub=`Great work! ${pct}% weighted score`; }
-  else if (pct>=60) { medal='🥉'; title='Copper Medal!'; sub=`Good effort! ${pct}% weighted score`; }
-  else if (earned>0){ title='Making Progress!'; sub=`${pct}% weighted score so far`; }
-
-  document.getElementById('medalIcon').textContent  = medal;
-  document.getElementById('achieveTitle').textContent = title;
-  document.getElementById('achieveSub').textContent   = sub;
-  document.getElementById('monthlyRank').textContent  = calcMonthlyRank();
-}
-
-function calcMonthlyRank() {
-  const data = loadData();
-  let total=0, count=0;
-  for (const key in data) {
-    const [y,m] = key.split('_').map(Number);
-    if (y===viewYear && m===(viewMonth+1)) {
-      const tasks = data[key];
-      if (tasks.length>0) { total += calcScore(tasks).pct; count++; }
-    }
-  }
-  if (!count) return '—';
-  const avg = Math.round(total/count);
-  if (avg>=90) return '👑 CHAMP';
-  if (avg>=80) return '⭐ PRO';
-  if (avg>=60) return '💪 STEADY';
-  return '🌱 GROWING';
-}
-
-// ===== MONTH SUMMARY STRIP =====
-function updateMonthSummary() {
-  const data = loadData();
-  let totalPct=0, activeDays=0, bestPct=0, tasksDone=0;
-
-  for (const key in data) {
-    const [y,m] = key.split('_').map(Number);
-    if (y===viewYear && m===(viewMonth+1)) {
-      const tasks = data[key];
-      if (!tasks.length) continue;
-      const { pct } = calcScore(tasks);
-      totalPct += pct; activeDays++;
-      if (pct>bestPct) bestPct=pct;
-      tasksDone += tasks.filter(t=>t.done).length;
-    }
-  }
-
-  document.getElementById('sumAvg').textContent   = activeDays ? Math.round(totalPct/activeDays)+'%' : '—';
-  document.getElementById('sumDays').textContent  = activeDays;
-  document.getElementById('sumBest').textContent  = activeDays ? bestPct+'%' : '—';
-  document.getElementById('sumTasks').textContent = tasksDone;
-}
-
-// ===== HEADER =====
-function updateHeaderDate() {
-  const d = selectedDate;
-  const isToday = d.toDateString() === realToday.toDateString();
-  document.getElementById('headerDate').textContent =
-    (isToday ? '📍 Today — ' : '') +
-    `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-}
-
-// ===== TASK LIST =====
-function renderTaskList(tasks) {
-  const list  = document.getElementById('taskList');
-  const count = document.getElementById('taskCount');
-  count.textContent = `${tasks.length} task${tasks.length!==1?'s':''}`;
-
-  if (!tasks.length) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🌿</div>
-        <p>No tasks for this day</p>
-        <small>Add a task above to get started!</small>
-      </div>`;
-    return;
-  }
-
-  list.innerHTML = '';
-  tasks.forEach((task, i) => {
-    const div = document.createElement('div');
-    div.className = `task-item row-${i%5}${task.done?' done':''}`;
-    div.innerHTML = `
-      <div class="task-check${task.done?' checked':''}" onclick="toggleTask(${i})">${task.done?'✓':''}</div>
-      <div class="task-body">
-        <div class="task-name">${escHtml(task.name)}</div>
-        <div class="task-time">Added ${task.time||''}</div>
-      </div>
-      <div class="task-pts-badge">${task.pts} pts</div>
-      <div class="task-actions">
-        <button class="task-edit-btn" onclick="openEdit(${i})">✏️</button>
-        <button class="task-del-btn"  onclick="deleteTask(${i})">🗑️</button>
-      </div>`;
-    list.appendChild(div);
-  });
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ===== TASK ACTIONS =====
-function addTask() {
-  const nameEl = document.getElementById('taskInput');
-  const ptsEl  = document.getElementById('ptsInput');
-  const name   = nameEl.value.trim();
-  const pts    = Math.min(10, Math.max(0, parseInt(ptsEl.value)||0));
-  if (!name) { showToast('⚠️ Please enter a task name'); nameEl.focus(); return; }
-
-  const tasks = getTasks(selectedDate);
-  tasks.push({ name, pts, done:false, time:getTimeStr() });
-  setTasks(selectedDate, tasks);
-  nameEl.value=''; ptsEl.value='5'; nameEl.focus();
-  renderAll();
-  showToast('✅ Task added!');
-}
-
-function toggleTask(i) {
-  const tasks = getTasks(selectedDate);
-  tasks[i].done = !tasks[i].done;
-  setTasks(selectedDate, tasks);
-  renderAll();
-  if (tasks[i].done) triggerConfetti();
-}
-
-function deleteTask(i) {
-  const tasks = getTasks(selectedDate);
-  tasks.splice(i,1);
-  setTasks(selectedDate, tasks);
-  renderAll();
-  showToast('🗑️ Task deleted');
-}
-
-function openEdit(i) {
-  editingIndex = i;
-  const t = getTasks(selectedDate)[i];
-  document.getElementById('editTaskName').value = t.name;
-  document.getElementById('editTaskPts').value  = t.pts;
-  openModal('editModal');
-}
-
-function saveEdit() {
-  const name = document.getElementById('editTaskName').value.trim();
-  const pts  = Math.min(10,Math.max(0,parseInt(document.getElementById('editTaskPts').value)||0));
-  if (!name) { showToast('⚠️ Task name cannot be empty'); return; }
-  const tasks = getTasks(selectedDate);
-  tasks[editingIndex].name = name;
-  tasks[editingIndex].pts  = pts;
-  setTasks(selectedDate, tasks);
-  closeModal('editModal');
-  renderAll();
-  showToast('✏️ Task updated!');
-}
-
-// ===== JOURNAL =====
-function loadJournalForDate() {
-  document.getElementById('journalArea').value = (loadNotes())[getKey(selectedDate)] || '';
-}
-function saveJournal() {
-  const notes = loadNotes();
-  notes[getKey(selectedDate)] = document.getElementById('journalArea').value;
-  saveNotes(notes);
-  showToast('📓 Note saved!');
-}
-
-// ===== CONFETTI =====
-function triggerConfetti() {
-  if (typeof confetti!=='undefined') {
-    confetti({ particleCount:60, spread:70, origin:{y:0.6},
-      colors:['#7c9e87','#9b8ec4','#f39c12','#a8c5b0','#c4b9e8'] });
-  }
-}
-
-// ===== HISTORY =====
-function toggleHistory() {
-  historyOpen = !historyOpen;
-  document.getElementById('historySection').classList.toggle('open', historyOpen);
-  document.getElementById('historyArrow').textContent = historyOpen ? '▲' : '▼';
-  if (historyOpen) buildHistory();
-}
-
-function buildHistory() {
-  const label = `${SHORT_MONTHS[viewMonth]} ${viewYear}`;
-  document.getElementById('chartMonthLabel').textContent    = label;
-  document.getElementById('accuracyMonthLabel').textContent = label;
-  buildMonthChart();
-  buildAccuracy();
-}
-
-function buildMonthChart() {
-  const data = loadData();
-  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
-  const labels=[], values=[];
-
-  for (let d=1; d<=daysInMonth; d++) {
-    const key   = `${viewYear}_${viewMonth+1}_${d}`;
-    const tasks = data[key]||[];
-    labels.push(d);
-    values.push(tasks.length>0 ? calcScore(tasks).pct : null);
-  }
-
-  const ctx = document.getElementById('monthChart').getContext('2d');
-  if (monthChart) monthChart.destroy();
-  monthChart = new Chart(ctx, {
-    type:'line',
-    data:{
-      labels,
-      datasets:[{
-        label:'Daily Score %', data:values,
-        borderColor:'#7c9e87', backgroundColor:'rgba(124,158,135,0.1)',
-        pointBackgroundColor:'#9b8ec4', pointRadius:4,
-        tension:0.4, fill:true, spanGaps:true
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{
-        y:{ min:0, max:100, ticks:{callback:v=>v+'%', font:{size:11}}, grid:{color:'rgba(0,0,0,0.05)'} },
-        x:{ ticks:{font:{size:11}}, grid:{display:false} }
-      }
-    }
-  });
-}
-
-function buildAccuracy() {
-  const data = loadData();
-  const stats = {};
-  for (const key in data) {
-    const [y,m] = key.split('_').map(Number);
-    if (y!==viewYear || m!==(viewMonth+1)) continue;
-    data[key].forEach(t => {
-      if (!stats[t.name]) stats[t.name]={total:0,done:0};
-      stats[t.name].total++;
-      if (t.done) stats[t.name].done++;
-    });
-  }
-
-  const list = document.getElementById('accuracyList');
-  const entries = Object.entries(stats).sort((a,b)=>(b[1].done/b[1].total)-(a[1].done/a[1].total));
-
-  if (!entries.length) {
-    list.innerHTML='<div style="color:var(--text-light);font-size:14px;text-align:center;padding:20px;">No data for this month yet.</div>';
-    return;
-  }
-
-  list.innerHTML='';
-  entries.forEach(([name,stat]) => {
-    const pct = Math.round((stat.done/stat.total)*100);
-    const div = document.createElement('div');
-    div.className='accuracy-item';
-    div.innerHTML=`
-      <div class="accuracy-header">
-        <div class="accuracy-name">${escHtml(name)}</div>
-        <div class="accuracy-pct">${pct}% (${stat.done}/${stat.total})</div>
-      </div>
-      <div class="accuracy-bar-bg">
-        <div class="accuracy-bar-fg" style="width:0%" data-width="${pct}%"></div>
-      </div>`;
-    list.appendChild(div);
-  });
-
-  setTimeout(()=>{
-    document.querySelectorAll('.accuracy-bar-fg').forEach(el=>{ el.style.width=el.dataset.width; });
-  },100);
-}
-
-// ===== BACKUP / RESTORE =====
-function openBackupModal() {
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify({ tasks:loadData(), notes:loadNotes() }))));
-  document.getElementById('backupCode').value = encoded;
-  openModal('backupModal');
-}
-function copyBackup() {
-  document.getElementById('backupCode').select();
-  document.execCommand('copy');
-  showToast('📋 Code copied to clipboard!');
-}
-function openRestoreModal() { document.getElementById('restoreCode').value=''; openModal('restoreModal'); }
-function restoreData() {
-  const code = document.getElementById('restoreCode').value.trim();
-  if (!code) { showToast('⚠️ Please paste a backup code'); return; }
-  try {
-    const dec = JSON.parse(decodeURIComponent(escape(atob(code))));
-    if (!dec.tasks||!dec.notes) throw 0;
-    saveData(dec.tasks); saveNotes(dec.notes);
-    closeModal('restoreModal'); renderAll();
-    showToast('✅ Data restored successfully!');
-  } catch { showToast('❌ Invalid backup code'); }
-}
-
-// ===== MODALS =====
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
-});
-
-// ===== TOAST =====
-let toastTimer;
-function showToast(msg) {
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
-}
-
-// ===== RENDER ALL =====
-function renderAll() {
-  const tasks = getTasks(selectedDate);
-  updateHeaderDate();
-  renderTaskList(tasks);
-  updateScoreUI(tasks);
-  updateMonthSummary();
-  loadJournalForDate();
-  if (historyOpen) buildHistory();
-}
-
-// ===== KEYBOARD =====
-document.getElementById('taskInput').addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
-
-// ===== INIT =====
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('splash').classList.add('hide');
-    document.getElementById('app').classList.add('visible');
-    setTimeout(() => document.getElementById('splash').remove(), 700);
-    updateMonthNav();
-    buildCalendar();
-    renderAll();
-  }, 2200);
-});
-</script>
+
+    <script>
+        // --- STATE VARIABLES ---
+        let currentDifficulty = 'Intermediate';
+        let pdfBase64 = null;
+        let pdfFilename = '';
+        
+        let questions = [];
+        let currentQuestionIdx = 0;
+        let answers = {}; // { index: optionString }
+        let markedForReview = {}; // { index: boolean }
+        let visited = { 0: true }; // { index: boolean }
+        let score = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+
+        // --- DOM ELEMENTS ---
+        const views = {
+            setup: document.getElementById('setup-view'),
+            generating: document.getElementById('generating-view'),
+            exam: document.getElementById('exam-view'),
+            results: document.getElementById('results-view'),
+            review: document.getElementById('review-view')
+        };
+
+        const els = {
+            sourceText: document.getElementById('source-text'),
+            pdfUpload: document.getElementById('pdf-upload'),
+            fileUploadLabel: document.getElementById('file-upload-label'),
+            fileIcon: document.getElementById('file-icon'),
+            fileName: document.getElementById('file-name'),
+            removeFileBtn: document.getElementById('remove-file-btn'),
+            diffBtns: document.querySelectorAll('.diff-btn'),
+            questionCount: document.getElementById('question-count'),
+            tokenWarning: document.getElementById('token-warning'),
+            timeLimit: document.getElementById('time-limit'),
+            apiKey: document.getElementById('api-key'),
+            startBtn: document.getElementById('start-btn'),
+            errorMsg: document.getElementById('error-msg'),
+            errorText: document.getElementById('error-text')
+        };
+
+        const examEls = {
+            qHeader: document.getElementById('q-number-header'),
+            qText: document.getElementById('q-text'),
+            qOptions: document.getElementById('q-options'),
+            timerDesktop: document.getElementById('timer-desktop'),
+            timerMobile: document.getElementById('timer-mobile'),
+            paletteGrid: document.getElementById('palette-grid'),
+            btnMark: document.getElementById('btn-mark'),
+            btnClear: document.getElementById('btn-clear'),
+            btnPrev: document.getElementById('btn-prev'),
+            btnSave: document.getElementById('btn-save'),
+            btnSubmit: document.getElementById('btn-submit'),
+            paletteSidebar: document.getElementById('palette-sidebar'),
+            paletteOverlay: document.getElementById('palette-overlay'),
+            btnTogglePalette: document.getElementById('btn-toggle-palette'),
+            btnClosePalette: document.getElementById('btn-close-palette'),
+            // Stats
+            stAns: document.getElementById('stat-ans'),
+            stNotAns: document.getElementById('stat-notans'),
+            stNotVis: document.getElementById('stat-notvis'),
+            stMarked: document.getElementById('stat-marked'),
+            stAnsMarked: document.getElementById('stat-ansmarked')
+        };
+
+        // --- NAVIGATION HELPER ---
+        function switchView(viewName) {
+            Object.values(views).forEach(v => v.classList.remove('active'));
+            views[viewName].classList.add('active');
+        }
+
+        function showError(msg) {
+            if (!msg) {
+                els.errorMsg.classList.add('hidden');
+                els.errorMsg.classList.remove('flex');
+            } else {
+                els.errorText.innerText = msg;
+                els.errorMsg.classList.remove('hidden');
+                els.errorMsg.classList.add('flex');
+            }
+        }
+
+        // --- SETUP LOGIC ---
+        
+        // Difficulty Selection
+        els.diffBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                currentDifficulty = e.target.dataset.level;
+                els.diffBtns.forEach(b => {
+                    if(b.dataset.level === currentDifficulty) {
+                        b.className = "diff-btn py-2 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow-md";
+                    } else {
+                        b.className = "diff-btn py-2 rounded-xl text-xs font-bold transition-all bg-white/70 text-gray-700 hover:bg-white border border-gray-200 shadow-sm";
+                    }
+                });
+            });
+        });
+
+        // Question Count Warning
+        els.questionCount.addEventListener('input', (e) => {
+            if(parseInt(e.target.value) > 50) {
+                els.tokenWarning.classList.remove('hidden');
+            } else {
+                els.tokenWarning.classList.add('hidden');
+            }
+        });
+
+        // PDF Upload
+        els.pdfUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.type !== "application/pdf") {
+                showError("Please upload a valid PDF file.");
+                return;
+            }
+            showError("");
+            pdfFilename = file.name;
+            const reader = new FileReader();
+            reader.onloadend = (ev) => {
+                pdfBase64 = ev.target.result.split(',')[1];
+                
+                // Update UI
+                els.fileUploadLabel.classList.remove('bg-white/70', 'text-blue-600', 'border-blue-200', 'hover:bg-blue-50');
+                els.fileUploadLabel.classList.add('bg-blue-50', 'border-blue-400', 'text-blue-700');
+                els.fileIcon.className = "ph-fill ph-file-text text-3xl";
+                els.fileName.innerText = pdfFilename;
+                els.removeFileBtn.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        els.removeFileBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            pdfBase64 = null;
+            pdfFilename = '';
+            els.pdfUpload.value = '';
+            
+            // Reset UI
+            els.fileUploadLabel.classList.add('bg-white/70', 'text-blue-600', 'border-blue-200', 'hover:bg-blue-50');
+            els.fileUploadLabel.classList.remove('bg-blue-50', 'border-blue-400', 'text-blue-700');
+            els.fileIcon.className = "ph ph-cloud-arrow-up text-3xl";
+            els.fileName.innerText = "Upload PDF Document";
+            els.removeFileBtn.classList.add('hidden');
+        });
+
+        // Generate AI Questions
+        els.startBtn.addEventListener('click', async () => {
+            const textContent = els.sourceText.value.trim();
+            const qCount = parseInt(els.questionCount.value) || 25;
+            const tLimit = parseInt(els.timeLimit.value) || 30;
+            const userKey = els.apiKey.value.trim();
+
+            if (!textContent && !pdfBase64) {
+                showError("Provide text or a PDF first.");
+                return;
+            }
+            if (qCount > 200 || qCount < 1) {
+                showError("Question count must be between 1 and 200.");
+                return;
+            }
+
+            showError("");
+            switchView('generating');
+
+            const promptText = `Generate exactly ${qCount} multiple choice questions. 
+Difficulty Level: ${currentDifficulty}.
+Source Material: ${textContent || "See attached PDF"}`;
+
+            const payload = {
+                contents: [
+                    { 
+                        parts: [
+                            { text: promptText }, 
+                            ...(pdfBase64 ? [{ inlineData: { mimeType: "application/pdf", data: pdfBase64 }}] : [])
+                        ] 
+                    }
+                ],
+                systemInstruction: { 
+                    parts: [{ text: `You are a professional examiner creating questions for an SSC/Eduquity pattern exam. Generate high-quality MCQs based ONLY on the provided text or PDF. 
+Difficulty: ${currentDifficulty}. Ensure exactly 4 options per question. Output strictly in JSON format matching the schema.` }] 
+                },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            questions: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        text: { type: "STRING", description: "The actual question" },
+                                        options: { type: "ARRAY", items: { type: "STRING" }, description: "Exactly 4 options" },
+                                        answer: { type: "STRING", description: "The correct option text exactly as it appears in the options array" }
+                                    },
+                                    required: ["text", "options", "answer"]
+                                }
+                            }
+                        },
+                        required: ["questions"]
+                    }
+                }
+            };
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userKey}`;
+
+            try {
+                // Retry logic simulation
+                let response = null;
+                let data = null;
+                const delays = [1000, 2000, 4000];
+                for(let i=0; i<=delays.length; i++) {
+                    try {
+                        response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if(response.ok) {
+                            data = await response.json();
+                            break;
+                        } else if (i === delays.length) {
+                             throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                    } catch(e) {
+                        if (i === delays.length) throw e;
+                        await new Promise(r => setTimeout(r, delays[i]));
+                    }
+                }
+
+                const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!jsonText) throw new Error("Invalid response format");
+                
+                const parsed = JSON.parse(jsonText);
+                if (!parsed.questions || parsed.questions.length === 0) {
+                    throw new Error("No questions were generated.");
+                }
+
+                // Initialize Exam State
+                questions = parsed.questions;
+                timerSeconds = tLimit * 60;
+                answers = {};
+                markedForReview = {};
+                visited = { 0: true };
+                currentQuestionIdx = 0;
+                score = 0;
+
+                startExam();
+
+            } catch (err) {
+                console.error(err);
+                showError(`Failed to generate questions. ${qCount > 50 ? "Generating a large number of questions may exceed API limits." : "Check your API key."}`);
+                switchView('setup');
+            }
+        });
+
+        // --- EXAM LOGIC ---
+
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            if (hrs > 0) {
+                return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                if(timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    finishExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const t = formatTime(timerSeconds);
+            examEls.timerDesktop.innerText = t;
+            examEls.timerMobile.innerText = t;
+        }
+
+        function startExam() {
+            switchView('exam');
+            startTimer();
+            renderQuestion();
+            renderPalette();
+            updateStats();
+        }
+
+        function getStats() {
+            let answered = 0, notAnswered = 0, notVisited = 0, marked = 0, answeredAndMarked = 0;
+
+            for(let i=0; i<questions.length; i++) {
+                const hasAns = answers[i] !== undefined;
+                const isMarked = markedForReview[i];
+                const isVis = visited[i];
+
+                if (!isVis) notVisited++;
+                else if (hasAns && isMarked) answeredAndMarked++;
+                else if (hasAns && !isMarked) answered++;
+                else if (!hasAns && isMarked) marked++;
+                else if (!hasAns && !isMarked) notAnswered++;
+            }
+            return { answered, notAnswered, notVisited, marked, answeredAndMarked };
+        }
+
+        function updateStats() {
+            const stats = getStats();
+            examEls.stAns.innerText = stats.answered;
+            examEls.stNotAns.innerText = stats.notAnswered;
+            examEls.stNotVis.innerText = stats.notVisited;
+            examEls.stMarked.innerText = stats.marked;
+            examEls.stAnsMarked.innerText = stats.answeredAndMarked;
+        }
+
+        function renderQuestion() {
+            examEls.qHeader.innerText = `Question No. ${currentQuestionIdx + 1}`;
+            
+            const q = questions[currentQuestionIdx];
+            examEls.qText.innerText = q.text;
+
+            examEls.qOptions.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const isChecked = answers[currentQuestionIdx] === opt;
+                
+                const label = document.createElement('label');
+                label.className = `flex items-start p-3 cursor-pointer transition-all rounded-lg border hover:border-blue-300 ${isChecked ? 'bg-blue-50 border-blue-400 shadow-sm' : 'border-transparent'}`;
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = `q-opt`;
+                input.className = "mt-1 w-4 h-4 text-blue-600 cursor-pointer";
+                input.checked = isChecked;
+                input.addEventListener('change', () => {
+                    answers[currentQuestionIdx] = opt;
+                    renderQuestion(); // Re-render for styling
+                    renderPalette();
+                    updateStats();
+                });
+
+                const span = document.createElement('span');
+                span.className = "text-sm sm:text-base text-gray-800 ml-3 font-medium leading-tight pt-0.5";
+                span.innerText = opt;
+
+                label.appendChild(input);
+                label.appendChild(span);
+                examEls.qOptions.appendChild(label);
+            });
+
+            // Update Prev Button State
+            if(currentQuestionIdx === 0) {
+                examEls.btnPrev.className = "flex-1 sm:flex-none px-4 sm:px-6 py-2 border font-bold rounded text-xs sm:text-sm transition-colors bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed";
+                examEls.btnPrev.disabled = true;
+            } else {
+                examEls.btnPrev.className = "flex-1 sm:flex-none px-4 sm:px-6 py-2 border font-bold rounded text-xs sm:text-sm transition-colors bg-gray-200 text-gray-800 border-gray-400 hover:bg-gray-300";
+                examEls.btnPrev.disabled = false;
+            }
+        }
+
+        function renderPalette() {
+            examEls.paletteGrid.innerHTML = '';
+            
+            for(let i=0; i<questions.length; i++) {
+                const isAnswered = answers[i] !== undefined;
+                const isMarked = markedForReview[i];
+                const isVis = visited[i];
+                
+                let statusClass = "bg-white border-gray-300 text-gray-700 rounded"; 
+                
+                if (isVis && !isAnswered && !isMarked) {
+                    statusClass = "bg-[#dc2626] border-[#dc2626] text-white rounded-t-md rounded-b-sm"; 
+                } else if (isAnswered && !isMarked) {
+                    statusClass = "bg-[#2eaa31] border-[#2eaa31] text-white rounded-t-md rounded-b-sm"; 
+                } else if (!isAnswered && isMarked) {
+                    statusClass = "bg-[#9333ea] border-[#9333ea] text-white rounded-full"; 
+                } else if (isAnswered && isMarked) {
+                    statusClass = "bg-[#9333ea] border-[#9333ea] text-white rounded-full relative after:content-[''] after:w-2.5 after:h-2.5 after:bg-[#2eaa31] after:absolute after:bottom-0 after:right-0 after:rounded-full after:border after:border-white"; 
+                }
+
+                if (currentQuestionIdx === i) {
+                    statusClass += " ring-2 ring-blue-500 ring-offset-1";
+                }
+                
+                const btn = document.createElement('button');
+                btn.className = `h-9 w-11 border text-sm font-bold flex items-center justify-center transition-all shadow-sm ${statusClass}`;
+                btn.innerText = i + 1;
+                btn.addEventListener('click', () => navigateTo(i));
+                
+                examEls.paletteGrid.appendChild(btn);
+            }
+        }
+
+        function navigateTo(index) {
+            currentQuestionIdx = index;
+            visited[index] = true;
+            renderQuestion();
+            renderPalette();
+            updateStats();
+        }
+
+        examEls.btnMark.addEventListener('click', () => {
+            markedForReview[currentQuestionIdx] = true;
+            if(currentQuestionIdx < questions.length - 1) {
+                navigateTo(currentQuestionIdx + 1);
+            } else {
+                renderPalette();
+                updateStats();
+            }
+        });
+
+        examEls.btnClear.addEventListener('click', () => {
+            delete answers[currentQuestionIdx];
+            renderQuestion();
+            renderPalette();
+            updateStats();
+        });
+
+        examEls.btnPrev.addEventListener('click', () => {
+            if(currentQuestionIdx > 0) navigateTo(currentQuestionIdx - 1);
+        });
+
+        examEls.btnSave.addEventListener('click', () => {
+            if(markedForReview[currentQuestionIdx]) {
+                delete markedForReview[currentQuestionIdx];
+            }
+            if(currentQuestionIdx < questions.length - 1) {
+                navigateTo(currentQuestionIdx + 1);
+            } else {
+                renderPalette();
+                updateStats();
+            }
+        });
+
+        examEls.btnSubmit.addEventListener('click', finishExam);
+
+        // Mobile Palette Toggles
+        examEls.btnTogglePalette.addEventListener('click', () => {
+            examEls.paletteSidebar.classList.remove('translate-x-full');
+            examEls.paletteOverlay.classList.remove('hidden');
+        });
+
+        const closePalette = () => {
+            examEls.paletteSidebar.classList.add('translate-x-full');
+            examEls.paletteOverlay.classList.add('hidden');
+        };
+        examEls.btnClosePalette.addEventListener('click', closePalette);
+        examEls.paletteOverlay.addEventListener('click', closePalette);
+
+        // --- RESULTS LOGIC ---
+
+        function finishExam() {
+            clearInterval(timerInterval);
+            
+            score = 0;
+            questions.forEach((q, i) => {
+                if(answers[i] === q.answer) score++;
+            });
+
+            const stats = getStats();
+            const percent = Math.round((score / questions.length) * 100) || 0;
+
+            document.getElementById('res-percent').innerText = `${percent}%`;
+            document.getElementById('res-score').innerText = score;
+            document.getElementById('res-total').innerText = `/${questions.length}`;
+            
+            document.getElementById('res-correct').innerText = score;
+            document.getElementById('res-incorrect').innerText = Object.keys(answers).length - score;
+            document.getElementById('res-unanswered').innerText = stats.notAnswered;
+            document.getElementById('res-marked').innerText = stats.marked + stats.answeredAndMarked;
+
+            switchView('results');
+        }
+
+        document.getElementById('btn-restart').addEventListener('click', () => {
+            questions = [];
+            els.sourceText.value = '';
+            els.removeFileBtn.click(); // resets PDF
+            switchView('setup');
+        });
+
+        // --- REVIEW LOGIC ---
+
+        document.getElementById('btn-go-review').addEventListener('click', () => {
+            document.getElementById('review-score-badge').innerText = `Score: ${score} / ${questions.length}`;
+            const container = document.getElementById('review-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, idx) => {
+                const userAnswer = answers[idx];
+                const isCorrect = userAnswer === q.answer;
+                const isUnanswered = userAnswer === undefined;
+
+                let badgeHtml = '';
+                if(isCorrect) {
+                    badgeHtml = `<span class="flex items-center gap-1.5 text-green-700 bg-green-100 px-3 py-1.5 rounded-full text-xs font-bold border border-green-200"><i class="ph-fill ph-check-circle text-sm"></i> Correct</span>`;
+                } else if (isUnanswered) {
+                    badgeHtml = `<span class="flex items-center gap-1.5 text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-bold border border-gray-200"><i class="ph-fill ph-clock text-sm"></i> Unanswered</span>`;
+                } else {
+                    badgeHtml = `<span class="flex items-center gap-1.5 text-red-700 bg-red-100 px-3 py-1.5 rounded-full text-xs font-bold border border-red-200"><i class="ph-fill ph-x-circle text-sm"></i> Incorrect</span>`;
+                }
+
+                let optionsHtml = '';
+                q.options.forEach(opt => {
+                    let optStyle = "bg-gray-50 border-gray-200 text-gray-600";
+                    let iconHtml = '<div class="w-[20px] h-[20px] shrink-0"></div>';
+
+                    if (opt === q.answer) {
+                        optStyle = "bg-green-50 border-green-500 text-green-800 font-semibold shadow-sm";
+                        iconHtml = '<i class="ph-fill ph-check-circle text-xl text-green-600 shrink-0"></i>';
+                    } else if (opt === userAnswer) {
+                        optStyle = "bg-red-50 border-red-400 text-red-800 shadow-sm";
+                        iconHtml = '<i class="ph-fill ph-x-circle text-xl text-red-500 shrink-0"></i>';
+                    }
+
+                    optionsHtml += `
+                        <div class="p-4 rounded-xl border flex items-start gap-3 transition-all ${optStyle}">
+                            ${iconHtml}
+                            <span class="leading-tight pt-0.5">${opt}</span>
+                        </div>
+                    `;
+                });
+
+                const qDiv = document.createElement('div');
+                qDiv.className = "bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-200";
+                qDiv.innerHTML = `
+                    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+                        <h3 class="font-bold text-gray-800 text-lg">Question ${idx + 1}</h3>
+                        ${badgeHtml}
+                    </div>
+                    <p class="text-gray-900 mb-6 font-medium text-base sm:text-lg whitespace-pre-wrap">${q.text}</p>
+                    <div class="space-y-3">
+                        ${optionsHtml}
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+
+            switchView('review');
+        });
+
+        document.getElementById('btn-back-results').addEventListener('click', () => {
+            switchView('results');
+        });
+
+    </script>
 </body>
 </html>
+
+```
